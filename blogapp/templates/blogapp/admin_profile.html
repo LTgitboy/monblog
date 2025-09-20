@@ -1,0 +1,718 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil Administrateur - {% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .profile-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .profile-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .profile-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+
+    /* Sidebar Profile */
+    .profile-sidebar {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        height: fit-content;
+    }
+
+    .profile-avatar {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .avatar-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        margin: 0 auto 1rem;
+        border: 4px solid var(--primary-color);
+    }
+
+    .user-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--text-primary);
+    }
+
+    .user-username {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .user-bio {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Main Content */
+    .profile-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* Admin Dashboard */
+    .admin-dashboard {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-stat {
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .dashboard-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .dashboard-stat.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+    }
+
+    .dashboard-stat.warning {
+        background: linear-gradient(135deg, var(--warning-color), #f59e0b);
+        color: white;
+    }
+
+    .dashboard-stat.success {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-description {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .admin-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .admin-card {
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        transition: var(--transition);
+        border: 2px solid transparent;
+    }
+
+    .admin-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-color);
+    }
+
+    .admin-card-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .admin-card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .admin-card-description {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* User Posts */
+    .user-posts {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .posts-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .posts-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .post-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-lg);
+        transition: var(--transition);
+    }
+
+    .post-item:hover {
+        background: var(--bg-secondary);
+        transform: translateX(5px);
+    }
+
+    .post-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-right: 1rem;
+    }
+
+    .status-published {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .status-pending {
+        background: var(--warning-color);
+        color: white;
+    }
+
+    .status-draft {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .post-title {
+        flex: 1;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .post-date {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: 1rem;
+    }
+
+    /* User Info */
+    .user-info {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-value {
+        color: var(--text-secondary);
+        padding: 0.75rem;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--bg-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .social-link:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .profile-content {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-sidebar {
+            order: 2;
+        }
+
+        .profile-main {
+            order: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .admin-profile-container {
+            padding: 1rem;
+        }
+
+        .dashboard-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .admin-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .post-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .post-actions {
+            align-self: flex-end;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-profile-container">
+    <!-- Header -->
+    <div class="profile-header">
+        <h1 class="profile-title">Profil Administrateur</h1>
+        <p class="profile-subtitle">Gestion du contenu et administration de la plateforme</p>
+    </div>
+
+    <div class="profile-content">
+        <!-- Sidebar avec informations utilisateur -->
+        <div class="profile-sidebar">
+            <div class="profile-avatar">
+                {% if user_profile.avatar %}
+                    <img src="{{ user_profile.avatar.url }}" alt="Avatar" class="avatar-image">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+                <h2 class="user-name">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="user-username">@{{ user.username }}</p>
+                
+                {% if user_profile.bio %}
+                    <p class="user-bio">{{ user_profile.bio }}</p>
+                {% else %}
+                    <p class="user-bio">Administrateur de la plateforme</p>
+                {% endif %}
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ user_posts.count }}</div>
+                    <div class="stat-label">Articles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ stats.total_posts }}</div>
+                    <div class="stat-label">Total Articles</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="{% url 'edit_profile' %}" class="btn btn-outline">
+                    <i class="fas fa-edit"></i> Modifier le profil
+                </a>
+                <a href="/admin/" class="btn btn-outline">
+                    <i class="fas fa-cog"></i> Admin Django
+                </a>
+                <a href="{% url 'create_post' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nouvel article
+                </a>
+            </div>
+
+            <!-- Informations de contact -->
+            {% if user_profile.website or user_profile.github_url or user_profile.linkedin_url or user_profile.twitter_url %}
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-primary);">Contacts</h3>
+                <div class="social-links">
+                    {% if user_profile.website %}
+                        <a href="{{ user_profile.website }}" target="_blank" class="social-link" title="Site web">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    {% endif %}
+                    {% if user_profile.github_url %}
+                        <a href="{{ user_profile.github_url }}" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    {% endif %}
+                    {% if user_profile.linkedin_url %}
+                        <a href="{{ user_profile.linkedin_url }}" target="_blank" class="social-link" title="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    {% endif %}
+                    {% if user_profile.twitter_url %}
+                        <a href="{{ user_profile.twitter_url }}" target="_blank" class="social-link" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="profile-main">
+            <!-- Tableau de bord admin -->
+            <div class="admin-dashboard">
+                <div class="dashboard-header">
+                    <h2 class="dashboard-title">Tableau de bord d'administration</h2>
+                    <span class="badge" style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: var(--radius-md);">
+                        Administrateur
+                    </span>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="dashboard-stat primary">
+                        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-value">{{ stats.total_posts }}</div>
+                        <div class="stat-description">Articles publiés</div>
+                    </div>
+                    <div class="dashboard-stat warning">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-value">{{ pending_posts_count }}</div>
+                        <div class="stat-description">En attente</div>
+                    </div>
+                    <div class="dashboard-stat success">
+                        <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="stat-value">{{ stats.total_projects }}</div>
+                        <div class="stat-description">Projets</div>
+                    </div>
+                    <div class="dashboard-stat">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-value">{{ total_users }}</div>
+                        <div class="stat-description">Utilisateurs</div>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="admin-card-title">Modération</h3>
+                        <p class="admin-card-description">Gérer les articles et projets en attente d'approbation</p>
+                        <a href="{% url 'moderation_dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-cog"></i> Accéder
+                        </a>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h3 class="admin-card-title">Utilisateurs</h3>
+                        <p class="admin-card-description">Gérer les comptes utilisateurs et permissions</p>
+                        <a href="/admin/auth/user/" class="btn btn-outline">
+                            <i class="fas fa-user-cog"></i> Gérer
+                        </a>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="admin-card-title">Statistiques</h3>
+                        <p class="admin-card-description">Analyser les performances du site</p>
+                        <a href="/admin/" class="btn btn-outline">
+                            <i class="fas fa-chart-line"></i> Voir stats
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles de l'utilisateur -->
+            <div class="user-posts">
+                <div class="posts-header">
+                    <h2 class="posts-title">Mes articles récents</h2>
+                    <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Nouveau
+                    </a>
+                </div>
+
+                <div class="posts-list">
+                    {% for post in user_posts|slice:":5" %}
+                    <div class="post-item">
+                        <span class="post-status status-{{ post.status }}">
+                            {{ post.get_status_display }}
+                        </span>
+                        <span class="post-title">
+                            <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+                        </span>
+                        <span class="post-date">{{ post.created_at|date:"d M Y" }}</span>
+                        <div class="post-actions">
+                            <a href="{% url 'edit_post' post.slug %}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        <i class="fas fa-file-alt" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Aucun article pour le moment
+                    </p>
+                    {% endfor %}
+                </div>
+
+                {% if user_posts.count > 5 %}
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="?view=all_posts" class="btn btn-outline">
+                        <i class="fas fa-list"></i> Voir tous mes articles
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Informations du profil -->
+            <div class="user-info">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-primary);">
+                    <i class="fas fa-info-circle"></i> Informations personnelles
+                </h2>
+
+                <div class="info-grid">
+                    <div class="info-group">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            Nom d'utilisateur
+                        </div>
+                        <div class="info-value">{{ user.username }}</div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="info-label">
+                            <i class="fas fa-calendar"></i>
+                            Date d'inscription
+                        </div>
+                        <div class="info-value">{{ user.date_joined|date:"d F Y" }}</div>
+                    </div>
+
+                    <div class="info-group">
+                        <div class="info-label">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Dernière connexion
+                        </div>
+                        <div class="info-value">
+                            {% if user.last_login %}
+                                {{ user.last_login|date:"d F Y à H:i" }}
+                            {% else %}
+                                Jamais connecté
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if user_profile.bio %}
+                <div class="info-group">
+                    <div class="info-label">
+                        <i class="fas fa-quote-left"></i>
+                        Bio
+                    </div>
+                    <div class="info-value">{{ user_profile.bio }}</div>
+                </div>
+                {% endif %}
+
+                {% if user_profile.website %}
+                <div class="info-group">
+                    <div class="info-label">
+                        <i class="fas fa-globe"></i>
+                        Site web
+                    </div>
+                    <div class="info-value">
+                        <a href="{{ user_profile.website }}" target="_blank">{{ user_profile.website }}</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

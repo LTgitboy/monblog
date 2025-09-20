@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if project %}Modifier - {{ project.title }}{% else %}Nouveau Projet{% endif %} | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    .form-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-row {
+        margin-bottom: 2rem;
+    }
+
+    .form-row.half {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label.required::after {
+        content: '*';
+        color: var(--error-color);
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+
+    .error-message {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-actions {
+        background: var(--bg-secondary);
+        padding: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .form-row.half {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="form-header">
+    <div class="container">
+        <h1 class="form-title">
+            <i class="fas fa-{% if project %}edit{% else %}plus{% endif %}"></i>
+            {% if project %}Modifier le Projet{% else %}Nouveau Projet{% endif %}
+        </h1>
+        <p class="form-subtitle">
+            {% if project %}
+                Modifiez les détails de votre projet
+            {% else %}
+                Créez un nouveau projet et partagez votre travail
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Formulaire -->
+<section class="form-container">
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        {% csrf_token %}
+        
+        <div class="form-body">
+            <!-- Titre -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}" class="form-label required">
+                        <i class="fas fa-heading"></i>
+                        Titre du projet
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        {% for error in form.title.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}" class="form-label required">
+                        <i class="fas fa-align-left"></i>
+                        Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        {% for error in form.description.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Type et Statut -->
+            <div class="form-row half">
+                <div class="form-group">
+                    <label for="{{ form.project_type.id_for_label }}" class="form-label required">
+                        <i class="fas fa-tag"></i>
+                        Type de projet
+                    </label>
+                    {{ form.project_type }}
+                    {% if form.project_type.errors %}
+                        {% for error in form.project_type.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}" class="form-label required">
+                        <i class="fas fa-flag"></i>
+                        Statut
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        {% for error in form.status.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="form-row half">
+                <div class="form-group">
+                    <label for="{{ form.start_date.id_for_label }}" class="form-label required">
+                        <i class="fas fa-calendar"></i>
+                        Date de début
+                    </label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        {% for error in form.start_date.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                        <i class="fas fa-calendar"></i>
+                        Date de fin
+                    </label>
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        {% for error in form.end_date.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">Laissez vide si le projet est en cours</div>
+                </div>
+            </div>
+
+            <!-- Technologies -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.technologies.id_for_label }}" class="form-label">
+                        <i class="fas fa-code"></i>
+                        Technologies utilisées
+                    </label>
+                    {{ form.technologies }}
+                    {% if form.technologies.errors %}
+                        {% for error in form.technologies.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">Séparez les technologies par des virgules (ex: Python, Django, JavaScript)</div>
+                </div>
+            </div>
+
+            <!-- URLs -->
+            <div class="form-row half">
+                <div class="form-group">
+                    <label for="{{ form.github_url.id_for_label }}" class="form-label">
+                        <i class="fab fa-github"></i>
+                        Lien GitHub
+                    </label>
+                    {{ form.github_url }}
+                    {% if form.github_url.errors %}
+                        {% for error in form.github_url.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.demo_url.id_for_label }}" class="form-label">
+                        <i class="fas fa-external-link-alt"></i>
+                        Lien démo
+                    </label>
+                    {{ form.demo_url }}
+                    {% if form.demo_url.errors %}
+                        {% for error in form.demo_url.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Image -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.featured_image.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i>
+                        Image principale
+                    </label>
+                    {{ form.featured_image }}
+                    {% if form.featured_image.errors %}
+                        {% for error in form.featured_image.errors %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <a href="{% url 'projects' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Annuler
+            </a>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-{% if project %}save{% else %}plus{% endif %}"></i>
+                {% if project %}Mettre à jour{% else %}Créer le projet{% endif %}
+            </button>
+        </div>
+    </form>
+</section>
+
+{% if not is_admin %}
+<div class="form-row">
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        Votre projet sera soumis pour approbation. Seul l'administrateur peut publier des projets.
+    </div>
+</div>
+{% endif %}
+{% endblock %}

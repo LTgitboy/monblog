@@ -1,0 +1,816 @@
+{% extends 'base.html' %}
+
+{% block title %}Robotique - Tutoriels Arduino, ESP32, Raspberry Pi | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Robotique */
+    .robotics-hero {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #db2777 100%);
+        color: white;
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .robotics-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="rgba(255,255,255,0.1)"><defs><pattern id="circuit" x="0" y="0" width="100" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1"/><circle cx="30" cy="10" r="1"/><circle cx="50" cy="10" r="1"/><circle cx="70" cy="10" r="1"/><circle cx="90" cy="10" r="1"/><line x1="10" y1="10" x2="30" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/><line x1="30" y1="10" x2="50" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/><line x1="50" y1="10" x2="70" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/><line x1="70" y1="10" x2="90" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/></pattern></defs><rect width="100" height="20" fill="url(%23circuit)"/></svg>');
+        background-size: 400px 80px;
+    }
+
+    .robotics-hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .robotics-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f9ff, #fef3c7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .robotics-hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Plateformes Section */
+    .platforms {
+        padding: 3rem 0;
+        background: var(--bg-secondary);
+    }
+
+    .platforms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .platform-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        text-align: center;
+        border-top: 5px solid;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .platform-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .platform-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .platform-arduino { border-top-color: #00979d; }
+    .platform-esp32 { border-top-color: #e94d36; }
+    .platform-raspberry { border-top-color: #c51a4a; }
+
+    .platform-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    .platform-arduino .platform-icon { color: #00979d; }
+    .platform-esp32 .platform-icon { color: #e94d36; }
+    .platform-raspberry .platform-icon { color: #c51a4a; }
+
+    .platform-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .platform-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .platform-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .platform-stat {
+        text-align: center;
+    }
+
+    .platform-stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .platform-stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .platform-posts {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .platform-post {
+        text-align: left;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-light);
+        transition: var(--transition);
+    }
+
+    .platform-post:hover {
+        border-color: var(--primary-color);
+        background: var(--bg-tertiary);
+    }
+
+    .platform-post-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .platform-post-title a {
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .platform-post-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .platform-post-meta {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* Projets Robotique */
+    .robotics-projects {
+        padding: 4rem 0;
+    }
+
+    .projects-showcase {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .project-showcase {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .project-showcase:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .project-showcase-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        position: relative;
+    }
+
+    .project-showcase-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.375rem 0.75rem;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--primary-color);
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .project-showcase-content {
+        padding: 1.5rem;
+    }
+
+    .project-showcase-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .project-showcase-title a {
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .project-showcase-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .project-showcase-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .project-showcase-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tech-badge {
+        padding: 0.25rem 0.5rem;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Section CTA */
+    .robotics-cta {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        text-align: center;
+    }
+
+    .robotics-cta h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .robotics-cta p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cta-btn {
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        font-size: 1rem;
+    }
+
+    .cta-btn-primary {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .cta-btn-primary:hover {
+        background: #d97706;
+        transform: translateY(-3px);
+    }
+
+    .cta-btn-outline {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        color: white;
+    }
+
+    .cta-btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Navigation rapide */
+    .quick-nav {
+        position: sticky;
+        top: 80px;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem 0;
+    }
+
+    .quick-nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .quick-nav-links {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .quick-nav-link {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quick-nav-link:hover {
+        color: var(--primary-color);
+        background: var(--bg-tertiary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .robotics-hero h1 {
+            font-size: 2.2rem;
+        }
+
+        .platforms-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .platform-stats {
+            gap: 1rem;
+        }
+
+        .projects-showcase {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-nav-links {
+            gap: 1rem;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .robotics-cta h2 {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .robotics-hero h1 {
+            font-size: 1.8rem;
+        }
+
+        .platform-card {
+            padding: 1.5rem;
+        }
+
+        .quick-nav {
+            position: static;
+        }
+
+        .quick-nav-links {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Quick Navigation -->
+<div class="quick-nav">
+    <div class="quick-nav-container">
+        <div class="quick-nav-links">
+            <a href="{% url 'arduino_detail' %}" class="quick-nav-link">
+                <i class="fas fa-microchip"></i>
+                Arduino
+            </a>
+            <a href="{% url 'esp32_detail' %}" class="quick-nav-link">
+                <i class="fas fa-wifi"></i>
+                ESP32
+            </a>
+            <a href="{% url 'raspberry_pi_detail' %}" class="quick-nav-link">
+                <i class="fas fa-server"></i>
+                Raspberry Pi
+            </a>
+            <a href="#projects" class="quick-nav-link">
+                <i class="fas fa-project-diagram"></i>
+                Projets
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Hero Robotique -->
+<section class="robotics-hero">
+    <div class="robotics-hero-content">
+        <div class="container">
+            <h1><i class="fas fa-robot"></i> Robotique & IoT</h1>
+            <p>
+                Plongez dans l'univers passionnant de la robotique avec mes tutoriels sur Arduino, ESP32, 
+                Raspberry Pi et bien plus encore. De l'électronique de base aux projets IoT avancés.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Plateformes -->
+<section class="platforms" id="platforms">
+    <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Plateformes de Développement</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary);">
+                Maîtrisez les principales plateformes de développement embarqué
+            </p>
+        </div>
+
+        <div class="platforms-grid">
+            <!-- Arduino -->
+            <div class="platform-card platform-arduino" id="arduino">
+    <div class="platform-icon">
+        <i class="fas fa-microchip"></i>
+    </div>
+    <h3 class="platform-title">Arduino</h3>
+    <p class="platform-description">
+        Découvrez la programmation embarquée avec Arduino. De la LED clignotante aux projets complexes avec capteurs et actuateurs.
+    </p>
+    
+    <div class="platform-stats">
+        <div class="platform-stat">
+            <div class="platform-stat-number">{{ arduino_posts.count }}</div>
+            <div class="platform-stat-label">Tutoriels</div>
+        </div>
+    </div>
+
+    <div class="platform-posts">
+        {% for post in arduino_posts %}
+        <div class="platform-post">
+            <div class="platform-post-title">
+                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </div>
+            <div class="platform-post-meta">
+                <span><i class="fas fa-calendar"></i> {{ post.created_at|date:"d M Y" }}</span>
+                <span><i class="fas fa-eye"></i> {{ post.views_count }} vues</span>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--text-muted);">Bientôt des tutoriels Arduino...</p>
+        {% endfor %}
+    </div>
+
+    <!-- Ajouter ce bouton -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{% url 'arduino_detail' %}" style="padding: 0.75rem 1.5rem; background: #00979d; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: var(--transition);">
+            <i class="fas fa-info-circle"></i>
+            Guide complet Arduino
+        </a>
+    </div>
+</div>
+
+            <!-- ESP32 -->
+            <div class="platform-card platform-esp32" id="esp32">
+    <div class="platform-icon">
+        <i class="fas fa-wifi"></i>
+    </div>
+    <h3 class="platform-title">ESP32</h3>
+    <p class="platform-description">
+        Explorez les possibilités infinies de l'ESP32 : WiFi, Bluetooth, IoT et bien plus. Créez des objets connectés performants.
+    </p>
+    
+    <div class="platform-stats">
+        <div class="platform-stat">
+            <div class="platform-stat-number">{{ esp32_posts.count }}</div>
+            <div class="platform-stat-label">Tutoriels</div>
+        </div>
+    </div>
+
+    <div class="platform-posts">
+        {% for post in esp32_posts %}
+        <div class="platform-post">
+            <div class="platform-post-title">
+                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </div>
+            <div class="platform-post-meta">
+                <span><i class="fas fa-calendar"></i> {{ post.created_at|date:"d M Y" }}</span>
+                <span><i class="fas fa-eye"></i> {{ post.views_count }} vues</span>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--text-muted);">Bientôt des tutoriels ESP32...</p>
+        {% endfor %}
+    </div>
+
+    <!-- Ajouter ce bouton -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{% url 'esp32_detail' %}" style="padding: 0.75rem 1.5rem; background: #e94d36; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: var(--transition);">
+            <i class="fas fa-info-circle"></i>
+            Guide complet ESP32
+        </a>
+    </div>
+</div>
+
+
+            <!-- Raspberry Pi -->
+            <div class="platform-card platform-raspberry" id="raspberry">
+    <div class="platform-icon">
+        <i class="fas fa-server"></i>
+    </div>
+    <h3 class="platform-title">Raspberry Pi</h3>
+    <p class="platform-description">
+        Transformez votre Raspberry Pi en serveur, station IoT ou robot autonome. Python, GPIO et projets avancés.
+    </p>
+    
+    <div class="platform-stats">
+        <div class="platform-stat">
+            <div class="platform-stat-number">{{ raspberry_posts.count }}</div>
+            <div class="platform-stat-label">Tutoriels</div>
+        </div>
+    </div>
+
+    <div class="platform-posts">
+        {% for post in raspberry_posts %}
+        <div class="platform-post">
+            <div class="platform-post-title">
+                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </div>
+            <div class="platform-post-meta">
+                <span><i class="fas fa-calendar"></i> {{ post.created_at|date:"d M Y" }}</span>
+                <span><i class="fas fa-eye"></i> {{ post.views_count }} vues</span>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--text-muted);">Bientôt des tutoriels Raspberry Pi...</p>
+        {% endfor %}
+    </div>
+
+    <!-- Ajouter ce bouton -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="{% url 'raspberry_pi_detail' %}" style="padding: 0.75rem 1.5rem; background: #c51a4a; color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: var(--transition);">
+            <i class="fas fa-info-circle"></i>
+            Guide complet Raspberry Pi
+        </a>
+    </div>
+</div>
+</section>
+
+<!-- Projets Robotique -->
+<section class="robotics-projects" id="projects">
+    <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Projets Robotique</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary);">
+                Découvrez mes projets de robotique et d'objets connectés
+            </p>
+        </div>
+
+        <div class="projects-showcase">
+            {% for project in robotics_projects %}
+            <div class="project-showcase">
+                {% if project.featured_image %}
+                    <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-showcase-image">
+                {% else %}
+                    <div class="project-showcase-image"></div>
+                {% endif %}
+                
+                <div class="project-showcase-badge">{{ project.get_project_type_display }}</div>
+                
+                <div class="project-showcase-content">
+                    <h3 class="project-showcase-title">
+                        <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
+                    </h3>
+                    
+                    <p class="project-showcase-description">
+                        {{ project.description|truncatechars:120 }}
+                    </p>
+                    
+                    <div class="project-showcase-tech">
+                        {% for tech in project.get_technologies_list|slice:":5" %}
+                            <span class="tech-badge">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.75rem;">
+                        <a href="{{ project.get_absolute_url }}" style="flex: 1; padding: 0.5rem 1rem; background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); text-align: center; font-weight: 500; transition: var(--transition);">
+                            <i class="fas fa-eye"></i> Voir le projet
+                        </a>
+                        {% if project.github_url %}
+                            <a href="{{ project.github_url }}" target="_blank" style="padding: 0.5rem; border: 1px solid var(--border-color); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); transition: var(--transition);">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Aucun projet robotique disponible pour le moment.</p>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">Revenez bientôt pour découvrir mes créations !</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if robotics_projects %}
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'projects' %}?type=robotics" class="btn btn-primary">
+                <i class="fas fa-arrow-right"></i>
+                Voir tous les projets robotique
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Tous les articles robotique -->
+<section style="padding: 4rem 0; background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Tous les Tutoriels</h2>
+            <p style="font-size: 1.1rem; color: var(--text-secondary);">
+                L'ensemble de mes articles sur la robotique et l'électronique
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+            {% for post in all_posts|slice:":6" %}
+            <article style="background: white; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-md); transition: var(--transition);">
+                {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color));"></div>
+                {% endif %}
+                
+                <div style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="padding: 0.25rem 0.75rem; background: var(--bg-tertiary); color: var(--primary-color); border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 500;">
+                            {{ post.get_difficulty_level_display }}
+                        </span>
+                        <span style="font-size: 0.9rem; color: var(--text-muted);">
+                            <i class="fas fa-clock"></i> {{ post.reading_time }} min
+                        </span>
+                    </div>
+                    
+                    <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4;">
+                        <a href="{{ post.get_absolute_url }}" style="text-decoration: none; color: var(--text-primary); transition: var(--transition);">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+                    
+                    <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+                        {{ post.excerpt|truncatechars:100 }}
+                    </p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                        {% for tag in post.tags.all|slice:":3" %}
+                            <span style="padding: 0.25rem 0.5rem; background: var(--bg-tertiary); color: var(--text-secondary); border-radius: var(--radius-sm); font-size: 0.75rem;">
+                                {{ tag.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-muted);">
+                        <span>
+                            <i class="fas fa-user"></i> {{ post.author.get_full_name|default:post.author.username }}
+                        </span>
+                        <span>
+                            <i class="fas fa-eye"></i> {{ post.views_count }} vues
+                        </span>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Aucun tutoriel disponible pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if all_posts.count > 6 %}
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'category_posts' slug=category.slug %}" class="btn btn-primary">
+                <i class="fas fa-arrow-right"></i>
+                Voir tous les tutoriels robotique ({{ all_posts.count }})
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="robotics-cta">
+    <div class="container">
+        <h2><i class="fas fa-rocket"></i> Prêt à créer ?</h2>
+        <p>
+            Rejoignez la communauté des makers et commencez votre voyage dans le monde de la robotique et de l'IoT. 
+            Des tutoriels pas à pas vous attendent !
+        </p>
+        
+        <div class="cta-buttons">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="cta-btn cta-btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Créer un compte gratuit
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'post_list' %}?category=robotique&difficulty=beginner" class="cta-btn cta-btn-outline">
+                <i class="fas fa-play"></i>
+                Commencer par les bases
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth scroll pour la navigation rapide
+    document.querySelectorAll('.quick-nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                const offset = 120; // Hauteur de la navbar + quick-nav
+                const elementPosition = targetElement.offsetTop;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Animation des cartes au scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observer les cartes
+    document.querySelectorAll('.platform-card, .project-showcase').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

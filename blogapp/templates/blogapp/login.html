@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion - {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Connexion</h1>
+                <p>Accédez à votre compte pour gérer vos articles et projets</p>
+            </div>
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Votre nom d'utilisateur" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Votre mot de passe" class="form-input">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+                <p><a href="#">Mot de passe oublié ?</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 2rem 0;
+    }
+    
+    .auth-card {
+        background: var(--bg-primary);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid var(--border-light);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .auth-header p {
+        color: var(--text-secondary);
+    }
+    
+    .auth-form {
+        margin-bottom: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .btn-full {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .auth-footer {
+        text-align: center;
+    }
+    
+    .auth-footer p {
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+    
+    .auth-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}

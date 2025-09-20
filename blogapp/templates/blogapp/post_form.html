@@ -1,0 +1,884 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if post %}Modifier - {{ post.title }}{% else %}Nouvel Article{% endif %} | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮
+{% endblock %}
+
+{% block extra_css %}
+{{ form.media.css }}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    .form-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-row {
+        margin-bottom: 2rem;
+    }
+
+    .form-row.half {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label.required::after {
+        content: '*';
+        color: var(--error-color);
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-control.error {
+        border-color: var(--error-color);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .error-message {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .image-preview-container {
+        margin-top: 1rem;
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+
+    .current-image {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        margin-bottom: 1rem;
+    }
+
+    .current-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+    }
+
+    .tags-input-container {
+        position: relative;
+    }
+
+    .tags-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .tag-suggestion {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-light);
+        transition: var(--transition);
+    }
+
+    .tag-suggestion:hover {
+        background: var(--bg-tertiary);
+    }
+
+    .tag-suggestion:last-child {
+        border-bottom: none;
+    }
+
+    .form-actions {
+        background: var(--bg-secondary);
+        padding: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    .btn-outline:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: var(--bg-tertiary);
+    }
+
+    .btn-secondary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #475569;
+        transform: translateY(-2px);
+    }
+
+    /* Status indicators */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-lg);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    .status-draft {
+        background: #fbbf24;
+        color: #92400e;
+    }
+
+    .status-pending {
+        background: #60a5fa;
+        color: #1e40af;
+    }
+
+    .status-published {
+        background: #34d399;
+        color: #065f46;
+    }
+
+    /* Preview section */
+    .preview-section {
+        margin-top: 2rem;
+        border-top: 2px solid var(--border-color);
+        padding-top: 2rem;
+    }
+
+    .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .preview-toggle {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .preview-toggle:hover {
+        background: #d97706;
+    }
+
+    .preview-content {
+        display: none;
+        background: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+    }
+
+    .preview-content.active {
+        display: block;
+    }
+
+    /* CKEditor customization */
+    .django-ckeditor-widget {
+        margin-top: 0.5rem;
+    }
+
+    /* Character counter */
+    .char-counter {
+        text-align: right;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .char-counter.warning {
+        color: var(--warning-color);
+    }
+
+    .char-counter.error {
+        color: var(--error-color);
+    }
+
+    /* Autosave indicator */
+    .autosave-indicator {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--success-color);
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-lg);
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 1000;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .autosave-indicator.show {
+        display: flex;
+        animation: slideIn 0.3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .form-row.half {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+        }
+    }
+
+    /* Loading states */
+    .btn.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .btn.loading::after {
+        content: '';
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="form-header">
+    <div class="container">
+        <h1 class="form-title">
+            <i class="fas fa-{% if post %}edit{% else %}plus{% endif %}"></i>
+            {% if post %}Modifier l'Article{% else %}Nouvel Article{% endif %}
+        </h1>
+        <p class="form-subtitle">
+            {% if post %}
+                Modifiez votre article et partagez vos connaissances
+            {% else %}
+                Créez un nouvel article et partagez vos connaissances
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Formulaire -->
+<section class="form-container">
+    <form method="post" enctype="multipart/form-data" id="post-form" class="form-card">
+        {% csrf_token %}
+        
+        <div class="form-body">
+            <!-- Titre -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}" class="form-label required">
+                        <i class="fas fa-heading"></i>
+                        Titre de l'article
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        {% for error in form.title.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Un titre accrocheur qui décrit clairement le contenu
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catégorie et Difficulté -->
+            <div class="form-row half">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}" class="form-label required">
+                        <i class="fas fa-folder"></i>
+                        Catégorie
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        {% for error in form.category.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.difficulty_level.id_for_label }}" class="form-label required">
+                        <i class="fas fa-signal"></i>
+                        Niveau de difficulté
+                    </label>
+                    {{ form.difficulty_level }}
+                    {% if form.difficulty_level.errors %}
+                        {% for error in form.difficulty_level.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Extrait -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.excerpt.id_for_label }}" class="form-label required">
+                        <i class="fas fa-align-left"></i>
+                        Extrait
+                    </label>
+                    {{ form.excerpt }}
+                    <div class="char-counter" id="excerpt-counter">
+                        0 / 300 caractères
+                    </div>
+                    {% if form.excerpt.errors %}
+                        {% for error in form.excerpt.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Un résumé qui apparaîtra dans la liste des articles (300 caractères max)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image mise en avant -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.featured_image.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i>
+                        Image mise en avant
+                    </label>
+                    
+                    {% if post.featured_image %}
+                        <div class="current-image">
+                            <img src="{{ post.featured_image.url }}" alt="Image actuelle">
+                            <div>
+                                <strong>Image actuelle</strong>
+                                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                                    Sélectionnez une nouvelle image pour la remplacer
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {{ form.featured_image }}
+                    <div class="image-preview-container" id="image-preview" style="display: none;">
+                        <img class="image-preview" alt="Aperçu de l'image">
+                    </div>
+                    
+                    {% if form.featured_image.errors %}
+                        {% for error in form.featured_image.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Image qui apparaîtra en tête d'article (formats: JPG, PNG, max 5MB)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.tags.id_for_label }}" class="form-label">
+                        <i class="fas fa-tags"></i>
+                        Tags
+                    </label>
+                    <div class="tags-input-container">
+                        {{ form.tags }}
+                        <div class="tags-suggestions" id="tags-suggestions"></div>
+                    </div>
+                    {% if form.tags.errors %}
+                        {% for error in form.tags.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Mots-clés séparés par des virgules (ex: Arduino, ESP32, IoT)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.content.id_for_label }}" class="form-label required">
+                        <i class="fas fa-file-alt"></i>
+                        Contenu de l'article
+                    </label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        {% for error in form.content.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Rédigez votre article avec l'éditeur riche. Vous pouvez ajouter du code, des images, etc.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statut -->
+            <div class="form-row">
+    <div class="form-group">
+        <label for="{{ form.status.id_for_label }}" class="form-label required">
+            <i class="fas fa-flag"></i>
+            Statut de publication
+        </label>
+        
+        {% if can_publish %}
+            {{ form.status }}
+        {% else %}
+            <input type="text" class="form-control" value="En attente d'approbation" disabled>
+            <input type="hidden" name="{{ form.status.name }}" value="pending">
+            <div class="help-text">
+                <i class="fas fa-info-circle"></i>
+                Votre article sera soumis pour approbation. Seul l'administrateur peut publier des articles.
+            </div>
+        {% endif %}
+        
+        {% if form.status.errors %}
+            {% for error in form.status.errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+        <!-- Actions -->
+        <div class="form-actions">
+            <a href="{% if post %}{{ post.get_absolute_url }}{% else %}{% url 'post_list' %}{% endif %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Annuler
+            </a>
+            
+            <button type="button" id="preview-btn" class="btn btn-secondary">
+                <i class="fas fa-eye"></i>
+                Aperçu
+            </button>
+            
+            <button type="submit" name="save_draft" class="btn btn-outline">
+                <i class="fas fa-save"></i>
+                Sauvegarder en brouillon
+            </button>
+            
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                <i class="fas fa-{% if post %}save{% else %}plus{% endif %}"></i>
+                {% if post %}Mettre à jour{% else %}Publier{% endif %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Section d'aperçu -->
+    <div class="preview-section" id="preview-section" style="display: none;">
+        <div class="preview-header">
+            <h3>Aperçu de l'article</h3>
+            <button type="button" id="hide-preview" class="preview-toggle">
+                <i class="fas fa-eye-slash"></i>
+                Masquer l'aperçu
+            </button>
+        </div>
+        <div class="preview-content" id="preview-content">
+            <!-- Le contenu de l'aperçu sera inséré ici -->
+        </div>
+    </div>
+</section>
+
+<!-- Indicateur de sauvegarde automatique -->
+<div class="autosave-indicator" id="autosave-indicator">
+    <i class="fas fa-check-circle"></i>
+    <span>Brouillon sauvegardé automatiquement</span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media.js }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Compteur de caractères pour l'extrait
+    const excerptField = document.getElementById('{{ form.excerpt.id_for_label }}');
+    const excerptCounter = document.getElementById('excerpt-counter');
+    
+    function updateExcerptCounter() {
+        const length = excerptField.value.length;
+        excerptCounter.textContent = `${length} / 300 caractères`;
+        
+        if (length > 250) {
+            excerptCounter.classList.add('warning');
+        } else {
+            excerptCounter.classList.remove('warning');
+        }
+        
+        if (length > 300) {
+            excerptCounter.classList.add('error');
+        } else {
+            excerptCounter.classList.remove('error');
+        }
+    }
+    
+    excerptField.addEventListener('input', updateExcerptCounter);
+    updateExcerptCounter(); // Initial count
+    
+    // Aperçu d'image
+    const imageInput = document.getElementById('{{ form.featured_image.id_for_label }}');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = imagePreview.querySelector('img');
+    
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.style.display = 'none';
+        }
+    });
+    
+    // Suggestions de tags
+    const tagsInput = document.getElementById('{{ form.tags.id_for_label }}');
+    const tagsSuggestions = document.getElementById('tags-suggestions');
+    
+    // Liste de tags populaires (à adapter selon vos besoins)
+    const popularTags = [
+        'Arduino', 'ESP32', 'Raspberry Pi', 'Python', 'Django', 'JavaScript',
+        'HTML', 'CSS', 'IoT', 'Robotique', 'Intelligence Artificielle',
+        'Machine Learning', 'Web', 'Mobile', 'Linux', 'Git', 'API'
+    ];
+    
+    tagsInput.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        const lastTag = value.split(',').pop().trim();
+        
+        if (lastTag.length >= 2) {
+            const suggestions = popularTags.filter(tag => 
+                tag.toLowerCase().includes(lastTag) && 
+                !value.includes(tag.toLowerCase())
+            ).slice(0, 5);
+            
+            if (suggestions.length > 0) {
+                tagsSuggestions.innerHTML = suggestions
+                    .map(tag => `<div class="tag-suggestion" data-tag="${tag}">${tag}</div>`)
+                    .join('');
+                tagsSuggestions.style.display = 'block';
+            } else {
+                tagsSuggestions.style.display = 'none';
+            }
+        } else {
+            tagsSuggestions.style.display = 'none';
+        }
+    });
+    
+    // Clic sur suggestion de tag
+    tagsSuggestions.addEventListener('click', function(e) {
+        if (e.target.classList.contains('tag-suggestion')) {
+            const tag = e.target.dataset.tag;
+            const currentValue = tagsInput.value;
+            const tags = currentValue.split(',').map(t => t.trim());
+            tags.pop(); // Supprimer le tag incomplet
+            tags.push(tag);
+            tagsInput.value = tags.join(', ') + ', ';
+            tagsSuggestions.style.display = 'none';
+            tagsInput.focus();
+        }
+    });
+    
+    // Masquer les suggestions quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.tags-input-container')) {
+            tagsSuggestions.style.display = 'none';
+        }
+    });
+    
+    // Aperçu de l'article
+    const previewBtn = document.getElementById('preview-btn');
+    const hidePreviewBtn = document.getElementById('hide-preview');
+    const previewSection = document.getElementById('preview-section');
+    const previewContent = document.getElementById('preview-content');
+    
+    previewBtn.addEventListener('click', function() {
+        const title = document.getElementById('{{ form.title.id_for_label }}').value;
+        const excerpt = excerptField.value;
+        
+        // Obtenir le contenu de CKEditor
+        let content = '';
+        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['{{ form.content.id_for_label }}']) {
+            content = CKEDITOR.instances['{{ form.content.id_for_label }}'].getData();
+        } else {
+            content = document.getElementById('{{ form.content.id_for_label }}').value;
+        }
+        
+        const previewHTML = `
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">
+                    ${title || 'Titre de votre article'}
+                </h1>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; font-style: italic;">
+                    ${excerpt || 'Extrait de votre article...'}
+                </p>
+                <div style="line-height: 1.8; color: var(--text-primary);">
+                    ${content || '<p>Commencez à écrire votre article...</p>'}
+                </div>
+            </div>
+        `;
+        
+        previewContent.innerHTML = previewHTML;
+        previewContent.classList.add('active');
+        previewSection.style.display = 'block';
+        
+        // Scroll vers l'aperçu
+        previewSection.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    hidePreviewBtn.addEventListener('click', function() {
+        previewSection.style.display = 'none';
+        previewContent.classList.remove('active');
+    });
+    
+    // Sauvegarde automatique (toutes les 2 minutes)
+    let autoSaveTimer;
+    const form = document.getElementById('post-form');
+    const autosaveIndicator = document.getElementById('autosave-indicator');
+    
+    function autoSave() {
+        // Ici vous pourriez implémenter une sauvegarde AJAX
+        // Pour le moment, on simule juste l'indicateur
+        autosaveIndicator.classList.add('show');
+        setTimeout(() => {
+            autosaveIndicator.classList.remove('show');
+        }, 3000);
+    }
+    
+    function resetAutoSaveTimer() {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(autoSave, 120000); // 2 minutes
+    }
+    
+    // Écouter les changements dans les champs importants
+    const importantFields = ['{{ form.title.id_for_label }}', '{{ form.excerpt.id_for_label }}'];
+    importantFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', resetAutoSaveTimer);
+        }
+    });
+    
+    // CKEditor change listener
+    if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.on('instanceReady', function(e) {
+            e.editor.on('change', resetAutoSaveTimer);
+        });
+    }
+    
+    // Gestion de la soumission du formulaire
+    const submitBtn = document.getElementById('submit-btn');
+    form.addEventListener('submit', function(e) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        // Réactiver le bouton après un délai (au cas où il y aurait des erreurs)
+        setTimeout(() => {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        }, 5000);
+    });
+    
+    // Confirmation avant de quitter si des modifications non sauvegardées
+    let hasUnsavedChanges = false;
+    
+    form.addEventListener('input', function() {
+        hasUnsavedChanges = true;
+    });
+    
+    form.addEventListener('submit', function() {
+        hasUnsavedChanges = false;
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (hasUnsavedChanges) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+});
+</script>
+{% endblock %}

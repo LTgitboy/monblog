@@ -1,0 +1,1070 @@
+{% extends 'base.html' %}
+
+{% block title %}𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮 - Portfolio & Blog Tech{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,0 1000,0 1000,100 0,30"/></svg>');
+        background-size: cover;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f9ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.8;
+        line-height: 1.6;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .cta-btn {
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: var(--transition);
+        font-size: 1.1rem;
+    }
+
+    .cta-primary {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--primary-color);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .cta-primary:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .cta-outline {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        color: white;
+    }
+
+    .cta-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Features Section */
+    .features {
+        padding: 4rem 0;
+        background: var(--bg-primary);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .feature-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        color: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .stat-card {
+        padding: 2rem 1rem;
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: scale(1.05);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    /* Recent Posts */
+    .recent-posts {
+        padding: 5rem 0;
+        background: var(--bg-secondary);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .post-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .post-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    }
+
+    .post-content {
+        padding: 2rem;
+    }
+
+    .post-category {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: var(--bg-tertiary);
+        color: var(--primary-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+    }
+
+    .post-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .post-title a {
+        text-decoration: none;
+        color: inherit;
+        transition: var(--transition);
+    }
+
+    .post-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .post-excerpt {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .post-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Featured Projects */
+    .featured-projects {
+        padding: 5rem 0;
+        background: var(--bg-primary);
+    }
+
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .project-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .project-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .project-content {
+        padding: 2rem;
+    }
+
+    .project-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .project-title a {
+        text-decoration: none;
+        color: inherit;
+        transition: var(--transition);
+    }
+
+    .project-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .project-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .project-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tech-tag {
+        padding: 0.4rem 0.8rem;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .project-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .project-link {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .project-link-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .project-link-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .project-link-secondary {
+        border: 2px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+
+    .project-link-secondary:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: var(--bg-tertiary);
+    }
+
+    /* Categories Section */
+    .categories {
+        padding: 5rem 0;
+        background: var(--bg-secondary);
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .category-card {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        text-align: center;
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .category-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .category-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .category-title a {
+        text-decoration: none;
+        color: inherit;
+        transition: var(--transition);
+    }
+
+    .category-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .category-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .category-count {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-md);
+        display: inline-block;
+    }
+
+    /* Testimonials Section */
+    .testimonials {
+        padding: 5rem 0;
+        background: var(--bg-primary);
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .testimonial-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        position: relative;
+    }
+
+    .testimonial-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-style: italic;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--bg-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+
+    .testimonial-info h4 {
+        margin: 0;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .testimonial-info p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 6rem 0;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        text-align: center;
+    }
+
+    .cta-content {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .cta-section h2 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+        font-size: 1.3rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Newsletter Section */
+    .newsletter {
+        padding: 4rem 0;
+        background: var(--bg-secondary);
+        text-align: center;
+    }
+
+    .newsletter-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .newsletter h3 {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .newsletter p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 1rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        font-size: 1rem;
+    }
+
+    .newsletter-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.8rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .hero-cta {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .posts-grid,
+        .projects-grid,
+        .categories-grid,
+        .testimonials-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero h1 {
+            font-size: 2.2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="container">
+            <h1>Bienvenue sur 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮</h1>
+            <p class="hero-subtitle">Développeur passionné par les technologies émergentes, la robotique et l'innovation</p>
+            <p class="hero-description">
+                Explorez un univers où le code rencontre la créativité. Tutoriels techniques, projets innovants 
+                et partage d'expériences sur les technologies modernes qui façonnent notre avenir.
+            </p>
+            <div class="hero-cta">
+                <a href="{% url 'post_list' %}" class="cta-btn cta-primary">
+                    <i class="fas fa-book-open"></i>
+                    Explorer le Blog
+                </a>
+                <a href="{% url 'projects' %}" class="cta-btn cta-outline">
+                    <i class="fas fa-code"></i>
+                    Découvrir mes Projets
+                </a>
+                <a href="{% url 'robotics_posts' %}" class="cta-btn cta-outline">
+                    <i class="fas fa-robot"></i>
+                    Univers Robotique
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Ce que vous trouverez ici</h2>
+            <p class="section-subtitle">
+                Une plateforme dédiée au partage de connaissances et à l'innovation technologique
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3 class="feature-title">Tutoriels Complets</h3>
+                <p class="feature-description">
+                    Des guides détaillés pas à pas pour maîtriser les technologies modernes, 
+                    de la programmation web aux systèmes embarqués.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="feature-title">Projets Innovants</h3>
+                <p class="feature-description">
+                    Découvrez des projets concrets allant du développement d'applications 
+                    web à la création de systèmes robotiques autonomes.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <h3 class="feature-title">Communauté Active</h3>
+                <p class="feature-description">
+                    Rejoignez une communauté de passionnés, échangez des idées et collaborez 
+                    sur des projets open-source innovants.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_posts }}+</div>
+                <div class="stat-label">Articles Techniques</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_projects }}+</div>
+                <div class="stat-label">Projets Réalisés</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_categories }}+</div>
+                <div class="stat-label">Domaines d'Expertise</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Contenu Qualité</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Posts -->
+<section class="recent-posts">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Articles Récents</h2>
+            <p class="section-subtitle">
+                Découvrez mes derniers tutoriels et réflexions sur les technologies modernes, 
+                l'IA, la robotique et le développement web.
+            </p>
+        </div>
+
+        <div class="posts-grid">
+            {% for post in recent_posts %}
+            <article class="post-card">
+                {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="post-image">
+                {% else %}
+                    <div class="post-image"></div>
+                {% endif %}
+                
+                <div class="post-content">
+                    <span class="post-category">{{ post.category.name }}</span>
+                    
+                    <h3 class="post-title">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                    </h3>
+                    
+                    <p class="post-excerpt">{{ post.excerpt|truncatewords:25 }}</p>
+                    
+                    <div class="post-meta">
+                        <div class="post-author">
+                            <i class="fas fa-user"></i>
+                            {{ post.author.get_full_name|default:post.author.username }}
+                        </div>
+                        <div class="post-date">
+                            <i class="fas fa-calendar"></i>
+                            {{ post.created_at|date:"d M Y" }}
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="text-center" style="grid-column: 1 / -1;">
+                <i class="fas fa-file-alt" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                <p style="font-size: 1.1rem; color: var(--text-secondary);">Aucun article disponible pour le moment. Revenez bientôt !</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'post_list' %}" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+                <i class="fas fa-arrow-right"></i>
+                Explorer tous les articles
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Projects -->
+<section class="featured-projects">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Projets en Vedette</h2>
+            <p class="section-subtitle">
+                Découvrez une sélection de mes réalisations techniques les plus significatives, 
+                allant du développement web aux systèmes embarqués.
+            </p>
+        </div>
+
+        <div class="projects-grid">
+            {% for project in featured_projects %}
+            <div class="project-card">
+                {% if project.featured_image %}
+                    <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-image">
+                {% else %}
+                    <div class="project-image"></div>
+                {% endif %}
+                
+                <div class="project-content">
+                    <h3 class="project-title">
+                        <a href="{{ project.get_absolute_url }}">{{ project.title }}</a>
+                    </h3>
+                    
+                    <p class="project-description">{{ project.description|truncatewords:20 }}</p>
+                    
+                    <div class="project-tech">
+                        {% for tech in project.get_technologies_list|slice:":4" %}
+                            <span class="tech-tag">{{ tech }}</span>
+                        {% endfor %}
+                        {% if project.get_technologies_list|length > 4 %}
+                            <span class="tech-tag">+{{ project.get_technologies_list|length|add:"-4" }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="project-links">
+                        <a href="{{ project.get_absolute_url }}" class="project-link project-link-primary">
+                            <i class="fas fa-eye"></i>
+                            Voir le projet
+                        </a>
+                        {% if project.github_url %}
+                            <a href="{{ project.github_url }}" target="_blank" class="project-link project-link-secondary">
+                                <i class="fab fa-github"></i>
+                                Code Source
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center" style="grid-column: 1 / -1;">
+                <i class="fas fa-project-diagram" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                <p style="font-size: 1.1rem; color: var(--text-secondary);">Aucun projet en vedette pour le moment. D'autres arrivent bientôt !</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'projects' %}" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+                <i class="fas fa-arrow-right"></i>
+                Voir tous les projets
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="categories">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Domaines d'Expertise</h2>
+            <p class="section-subtitle">
+                Explorez mes articles par domaine de spécialisation et découvrez des contenus 
+                techniques approfondis dans chaque catégorie.
+            </p>
+        </div>
+
+        <div class="categories-grid">
+            {% for category in categories %}
+            <div class="category-card" style="border-top-color: {{ category.color }};">
+                <div class="category-icon" style="color: {{ category.color }};">
+                    <i class="{{ category.icon }}"></i>
+                </div>
+                
+                <h3 class="category-title">
+                    <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+                </h3>
+                
+                <p class="category-description">
+                    {{ category.description|default:"Articles techniques et tutoriels détaillés sur ce domaine passionnant." }}
+                </p>
+                
+                <div class="category-count">
+                    {{ category.post_count }} article{{ category.post_count|pluralize }}
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center" style="grid-column: 1 / -1;">
+                <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                <p style="font-size: 1.1rem; color: var(--text-secondary);">Aucune catégorie disponible pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Ce qu'en disent les lecteurs</h2>
+            <p class="section-subtitle">
+                Découvrez les témoignages de ceux qui ont déjà exploré le contenu et les projets
+            </p>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "Les tutoriels sont extrêmement bien détaillés et m'ont permis de maîtriser 
+                    des concepts techniques complexes que je n'avais jamais compris auparavant."
+                </div>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="testimonial-info">
+                        <h4>Test1.</h4>
+                        <p>Développeuse Web</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "La section robotique est une mine d'or pour les passionnés d'électronique. 
+                    Les projets sont bien expliqués et reproductibles même pour les débutants."
+                </div>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="testimonial-info">
+                        <h4>Test2.</h4>
+                        <p>Étudiant en Robotique</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "La qualité des explications techniques et la clarté des exemples de code 
+                    font de ce blog une référence pour tout développeur qui veut progresser."
+                </div>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="testimonial-info">
+                        <h4>Test3.</h4>
+                        <p>Ingénieure Logiciel</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter">
+    <div class="container">
+        <div class="newsletter-content">
+            <h3>Restez informé</h3>
+            <p>
+                Inscrivez-vous à la newsletter pour recevoir les derniers articles, tutoriels 
+                et mises à jour de projets directement dans votre boîte mail.
+            </p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Votre email" class="newsletter-input" required>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                    S'inscrire
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Prêt à développer vos compétences ?</h2>
+            <p>
+                Rejoignez une communauté de passionnés de technologie et accédez à des centaines 
+                de tutoriels, projets open-source et ressources exclusives pour booster votre apprentissage.
+            </p>
+            <div class="cta-buttons">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="cta-btn cta-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Créer un compte gratuit
+                    </a>
+                    <a href="{% url 'login' %}" class="cta-btn cta-outline">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Se connecter
+                    </a>
+                {% else %}
+                    <a href="{% url 'robotics_posts' %}" class="cta-btn cta-primary">
+                        <i class="fas fa-robot"></i>
+                        Explorer la Robotique
+                    </a>
+                    <a href="{% url 'create_post' %}" class="cta-btn cta-outline">
+                        <i class="fas fa-pencil-alt"></i>
+                        Rédiger un article
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

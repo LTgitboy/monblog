@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Modération - {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Tableau de bord de modération</h1>
+        <p class="page-description">Gérez les soumissions d'articles et de projets</p>
+    </div>
+
+    <div class="moderation-sections">
+        <!-- Articles en attente -->
+        <section class="moderation-section">
+            <h2>
+                <i class="fas fa-file-alt"></i>
+                Articles en attente d'approbation
+                <span class="badge">{{ pending_posts.count }}</span>
+            </h2>
+            
+            {% if pending_posts %}
+            <div class="moderation-list">
+                {% for post in pending_posts %}
+                <div class="moderation-item">
+                    <div class="item-info">
+                        <h3>{{ post.title }}</h3>
+                        <p>Soumis par: {{ post.submitted_by.username }} | {{ post.created_at|date:"d M Y" }}</p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="{% url 'post_detail' post.slug %}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                        <a href="{% url 'approve_post' post.slug %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-check"></i> Approuver
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">Aucun article en attente d'approbation.</p>
+            {% endif %}
+        </section>
+
+        <!-- Projets en attente -->
+        <section class="moderation-section">
+            <h2>
+                <i class="fas fa-project-diagram"></i>
+                Projets en attente d'approbation
+                <span class="badge">{{ pending_projects.count }}</span>
+            </h2>
+            
+            {% if pending_projects %}
+            <div class="moderation-list">
+                {% for project in pending_projects %}
+                <div class="moderation-item">
+                    <div class="item-info">
+                        <h3>{{ project.title }}</h3>
+                        <p>Soumis par: {{ project.submitted_by.username }} | {{ project.created_at|date:"d M Y" }}</p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="{% url 'project_detail' project.slug %}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                        <a href="{% url 'approve_project' project.slug %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-check"></i> Approuver
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">Aucun projet en attente d'approbation.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<style>
+    .moderation-sections {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .moderation-section {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+    }
+    
+    .moderation-section h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+    
+    .badge {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .moderation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .moderation-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--bg-primary);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+    }
+    
+    .item-info h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+    }
+    
+    .item-info p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .item-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+    
+    @media (max-width: 768px) {
+        .moderation-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .item-actions {
+            align-self: flex-end;
+        }
+    }
+</style>
+{% endblock %}

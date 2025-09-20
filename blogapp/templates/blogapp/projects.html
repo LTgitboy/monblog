@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes Projets - {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Mes Projets</h1>
+        <p class="page-description">Découvrez tous mes projets de développement, de la conception à la réalisation.</p>
+
+         <!-- AJOUT: Bouton Nouveau Projet -->
+        {% if user.is_authenticated %}
+        <div class="page-actions">
+            <a href="{% url 'create_project' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nouveau Projet
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters-section">
+        <div class="filters-header">
+            <h2>Filtrer les projets</h2>
+            <button class="btn btn-outline" id="toggleFilters">
+                <i class="fas fa-filter"></i> Filtres
+            </button>
+        </div>
+        
+        <div class="filters-content" id="filtersContent">
+            <form method="get" class="filters-form">
+                <div class="filter-group">
+                    <label for="type">Type de projet:</label>
+                    <select name="type" id="type" onchange="this.form.submit()">
+                        <option value="">Tous les types</option>
+                        {% for value, label in project_types %}
+                            <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status">Statut:</label>
+                    <select name="status" id="status" onchange="this.form.submit()">
+                        <option value="">Tous les statuts</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Appliquer
+                </button>
+                <a href="{% url 'projects' %}" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Réinitialiser
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des projets -->
+    <div class="projects-grid">
+        {% if page_obj %}
+            {% for project in page_obj %}
+                 {% if project.is_approved or user.is_staff %}
+                <div class="project-card">
+                    {% if not project.is_approved %}
+                    <div class="project-status pending-approval">
+                    En attente
+                </div>
+                {% endif %}
+                {% endif %}
+                    <div class="project-image">
+                        {% if project.featured_image %}
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                        {% else %}
+                            <div class="project-image-placeholder">
+                                <i class="fas fa-{{ project.project_type|default:'code' }}"></i>
+                            </div>
+                        {% endif %}
+                        <div class="project-status {{ project.status }}">
+                            {{ project.get_status_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="project-content">
+                        <h3 class="project-title">
+                            <a href="{% url 'project_detail' project.slug %}">{{ project.title }}</a>
+                        </h3>
+                        
+                        <p class="project-description">{{ project.description|truncatewords:30 }}</p>
+                        
+                        <div class="project-meta">
+                            <span class="project-type">
+                                <i class="fas fa-tag"></i> {{ project.get_project_type_display }}
+                            </span>
+                            <span class="project-date">
+                                <i class="fas fa-calendar"></i> {{ project.start_date|date:"M Y" }}
+                                {% if project.end_date %} - {{ project.end_date|date:"M Y" }}{% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="project-technologies">
+                            {% for tech in project.get_technologies_list|slice:":5" %}
+                                <span class="tech-tag">{{ tech }}</span>
+                            {% endfor %}
+                            {% if project.get_technologies_list|length > 5 %}
+                                <span class="tech-tag">+{{ project.get_technologies_list|length|add:"-5" }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="project-links">
+                            {% if project.github_url %}
+                                <a href="{{ project.github_url }}" target="_blank" class="btn btn-outline btn-sm">
+                                    <i class="fab fa-github"></i> Code
+                                </a>
+                            {% endif %}
+                            {% if project.demo_url %}
+                                <a href="{{ project.demo_url }}" target="_blank" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-external-link-alt"></i> Démo
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Voir plus
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <h3>Aucun projet trouvé</h3>
+                <p>Aucun projet ne correspond à vos critères de recherche.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}" class="pagination-item">
+                    <i class="fas fa-chevron-left"></i> Précédent
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="pagination-item active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}" class="pagination-item">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}" class="pagination-item">
+                    Suivant <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Styles spécifiques à la page projets */
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-description {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Filtres */
+    .filters-section {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .filters-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .filters-header h2 {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+    }
+    
+    .filters-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .filter-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+    
+    .filter-group select {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+    
+    /* Grille de projets */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .project-card {
+        background: var(--bg-primary);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
+    }
+    
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .project-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .project-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .project-card:hover .project-image img {
+        transform: scale(1.05);
+    }
+    
+    .project-image-placeholder {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        font-size: 3rem;
+    }
+    
+    .project-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .project-status.planning {
+        background: var(--warning-color);
+        color: white;
+    }
+    
+    .project-status.development {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .project-status.testing {
+        background: var(--accent-color);
+        color: white;
+    }
+    
+    .project-status.completed {
+        background: var(--success-color);
+        color: white;
+    }
+    
+    .project-status.maintenance {
+        background: var(--secondary-color);
+        color: white;
+    }
+    
+    .project-content {
+        padding: 1.5rem;
+    }
+    
+    .project-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .project-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+    
+    .project-title a:hover {
+        color: var(--primary-color);
+    }
+    
+    .project-description {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .project-meta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .project-type, .project-date {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--text-muted);
+    }
+    
+    .project-technologies {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tech-tag {
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .project-links {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    /* État vide */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+    
+    .pagination-item {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .pagination-item:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        background: var(--bg-tertiary);
+    }
+    
+    .pagination-item.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filters-form {
+            grid-template-columns: 1fr;
+        }
+        
+        .project-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .pagination {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<script>
+    // Toggle filters on mobile
+    document.getElementById('toggleFilters').addEventListener('click', function() {
+        const filtersContent = document.getElementById('filtersContent');
+        filtersContent.style.display = filtersContent.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Hide filters by default on mobile
+    if (window.innerWidth < 768) {
+        document.getElementById('filtersContent').style.display = 'none';
+    }
+</script>
+{% endblock %}

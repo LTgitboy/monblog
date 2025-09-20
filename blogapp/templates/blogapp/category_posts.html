@@ -1,0 +1,831 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Articles | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-hero {
+        background: linear-gradient(135deg, {{ category.color|default:"#2563eb" }} 0%, #1e40af 100%);
+        color: white;
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="rgba(255,255,255,0.1)"><circle cx="10" cy="10" r="2"/><circle cx="30" cy="10" r="2"/><circle cx="50" cy="10" r="2"/><circle cx="70" cy="10" r="2"/><circle cx="90" cy="10" r="2"/></svg>');
+        background-size: 200px 40px;
+    }
+
+    .category-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .category-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.1);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .category-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f9ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .category-description {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .category-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 2rem;
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Section des articles */
+    .posts-section {
+        padding: 3rem 0;
+    }
+
+    .posts-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .posts-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .sort-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .sort-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: white;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .view-toggle {
+        display: flex;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+
+    .view-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: white;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .view-btn.active {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .view-btn:hover {
+        background: var(--bg-tertiary);
+    }
+
+    .view-btn.active:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Vue grille */
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    /* Vue liste */
+    .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    /* Style grille */
+    .post-card.grid-view .post-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, {{ category.color|default:"#2563eb" }}, var(--accent-color));
+    }
+
+    .post-card.grid-view .post-content {
+        padding: 1.5rem;
+    }
+
+    /* Style liste */
+    .post-card.list-view {
+        display: flex;
+        align-items: center;
+    }
+
+    .post-card.list-view .post-image {
+        width: 200px;
+        height: 120px;
+        object-fit: cover;
+        background: linear-gradient(135deg, {{ category.color|default:"#2563eb" }}, var(--accent-color));
+        flex-shrink: 0;
+    }
+
+    .post-card.list-view .post-content {
+        padding: 1.5rem;
+        flex: 1;
+    }
+
+    .post-difficulty {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .difficulty-beginner { background: var(--success-color); }
+    .difficulty-intermediate { background: var(--accent-color); }
+    .difficulty-advanced { background: var(--error-color); }
+    .difficulty-expert { background: #7c3aed; }
+
+    .post-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .post-title a {
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .post-title a:hover {
+        color: {{ category.color|default:"var(--primary-color)" }};
+    }
+
+    .post-excerpt {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        padding: 0.25rem 0.5rem;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .tag:hover {
+        background: {{ category.color|default:"var(--primary-color)" }};
+        color: white;
+    }
+
+    .post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border-light);
+        padding-top: 1rem;
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .post-stats {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .post-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 4rem;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .page-link {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        color: var(--text-secondary);
+        background: white;
+        transition: var(--transition);
+        min-width: 2.5rem;
+        text-align: center;
+    }
+
+    .page-link:hover,
+    .page-link.active {
+        background: {{ category.color|default:"var(--primary-color)" }};
+        color: white;
+        border-color: {{ category.color|default:"var(--primary-color)" }};
+    }
+
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* État vide */
+    .no-posts {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+    }
+
+    .no-posts i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        color: {{ category.color|default:"var(--primary-color)" }};
+    }
+
+    .no-posts h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    /* Sidebar */
+    .category-sidebar {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        height: fit-content;
+        position: sticky;
+        top: 6rem;
+    }
+
+    .sidebar-section {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .recent-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .recent-post {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        transition: var(--transition);
+        text-decoration: none;
+        color: var(--text-primary);
+        border: 1px solid var(--border-light);
+    }
+
+    .recent-post:hover {
+        border-color: {{ category.color|default:"var(--primary-color)" }};
+        background: var(--bg-tertiary);
+    }
+
+    .recent-post-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, {{ category.color|default:"#2563eb" }}, var(--accent-color));
+        flex-shrink: 0;
+    }
+
+    .recent-post-content {
+        flex: 1;
+    }
+
+    .recent-post-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0.25rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .recent-post-date {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag-cloud .tag {
+        background: var(--bg-secondary);
+        font-size: 0.8rem;
+    }
+
+    /* Layout responsive */
+    .category-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 3rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .category-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .category-sidebar {
+            position: static;
+        }
+
+        .posts-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .category-title {
+            font-size: 2.2rem;
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+        }
+
+        .category-stats {
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 0.75rem 1.5rem;
+        }
+
+        .posts-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .sort-controls {
+            justify-content: space-between;
+        }
+
+        .posts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .post-card.list-view {
+            flex-direction: column;
+        }
+
+        .post-card.list-view .post-image {
+            width: 100%;
+            height: 180px;
+        }
+
+        .category-layout {
+            padding: 0 0.5rem;
+        }
+
+        .category-sidebar {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .category-title {
+            font-size: 1.8rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
+
+        .posts-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero de la catégorie -->
+<section class="category-hero">
+    <div class="container">
+        <div class="category-content">
+            <div class="category-icon">
+                <i class="{{ category.icon|default:'fas fa-folder' }}"></i>
+            </div>
+            
+            <h1 class="category-title">{{ category.name }}</h1>
+            
+            <p class="category-description">
+                {{ category.description|default:"Découvrez tous les articles de cette catégorie" }}
+            </p>
+            
+            <div class="category-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ page_obj.paginator.count }}</span>
+                    <span class="stat-label">Article{{ page_obj.paginator.count|pluralize }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ category.posts.aggregate.total_views|default:0 }}</span>
+                    <span class="stat-label">Vues totales</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section des articles -->
+<section class="posts-section">
+    <div class="category-layout">
+        <!-- Articles principaux -->
+        <div class="posts-main">
+            <div class="posts-header">
+                <h2 class="posts-title">Articles de {{ category.name }}</h2>
+                
+                <div class="sort-controls">
+                    <select class="sort-select" onchange="sortPosts(this.value)">
+                        <option value="recent">Plus récents</option>
+                        <option value="popular">Plus populaires</option>
+                        <option value="title">Titre A-Z</option>
+                        <option value="difficulty">Par difficulté</option>
+                    </select>
+                    
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" onclick="changeView('grid')">
+                            <i class="fas fa-th"></i>
+                            Grille
+                        </button>
+                        <button class="view-btn" data-view="list" onclick="changeView('list')">
+                            <i class="fas fa-list"></i>
+                            Liste
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {% if page_obj %}
+                <div id="posts-container" class="posts-grid">
+                    {% for post in page_obj %}
+                    <article class="post-card grid-view">
+                        {% if post.featured_image %}
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="post-image">
+                        {% else %}
+                            <div class="post-image"></div>
+                        {% endif %}
+
+                        <div class="post-difficulty difficulty-{{ post.difficulty_level }}">
+                            {{ post.get_difficulty_level_display }}
+                        </div>
+
+                        <div class="post-content">
+                            <h3 class="post-title">
+                                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            </h3>
+
+                            <p class="post-excerpt">{{ post.excerpt }}</p>
+
+                            <div class="post-tags">
+                                {% for tag in post.tags.all|slice:":3" %}
+                                    <a href="{% url 'post_list' %}?tag={{ tag.name }}" class="tag">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+
+                            <div class="post-meta">
+                                <div class="post-author">
+                                    <i class="fas fa-user"></i>
+                                    {{ post.author.get_full_name|default:post.author.username }}
+                                </div>
+                                <div class="post-stats">
+                                    <div class="post-stat">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ post.created_at|date:"d M" }}
+                                    </div>
+                                    <div class="post-stat">
+                                        <i class="fas fa-clock"></i>
+                                        {{ post.reading_time }}min
+                                    </div>
+                                    <div class="post-stat">
+                                        <i class="fas fa-eye"></i>
+                                        {{ post.views_count }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1" class="page-link">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="page-link active">{{ num }}</span>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <div class="no-posts">
+                    <i class="fas fa-search"></i>
+                    <h3>Aucun article dans cette catégorie</h3>
+                    <p>Il n'y a pas encore d'articles publiés dans cette catégorie.</p>
+                    <a href="{% url 'post_list' %}" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fas fa-arrow-left"></i>
+                        Voir tous les articles
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="category-sidebar">
+            <!-- Articles récents de cette catégorie -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-clock"></i>
+                    Articles Récents
+                </h3>
+                <div class="recent-posts">
+                    {% for post in category.posts.published|slice:":4" %}
+                        <a href="{{ post.get_absolute_url }}" class="recent-post">
+                            {% if post.featured_image %}
+                                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="recent-post-image">
+                            {% else %}
+                                <div class="recent-post-image"></div>
+                            {% endif %}
+                            <div class="recent-post-content">
+                                <div class="recent-post-title">{{ post.title|truncatechars:50 }}</div>
+                                <div class="recent-post-date">{{ post.created_at|date:"d M Y" }}</div>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <p style="color: var(--text-muted); font-style: italic;">Aucun article récent</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tags de cette catégorie -->
+            {% if category_tags %}
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-tags"></i>
+                    Tags Populaires
+                </h3>
+                <div class="tag-cloud">
+                    {% for tag in category_tags %}
+                        <a href="{% url 'post_list' %}?tag={{ tag.name }}&category={{ category.slug }}" class="tag">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Autres catégories -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-folder"></i>
+                    Autres Catégories
+                </h3>
+                <div>
+                    {% for cat in other_categories %}
+                        <a href="{{ cat.get_absolute_url }}" class="recent-post" style="border-color: {{ cat.color|default:'var(--border-color)' }};">
+                            <div class="recent-post-image" style="background: linear-gradient(135deg, {{ cat.color|default:'#2563eb' }}, var(--accent-color)); display: flex; align-items: center; justify-content: center;">
+                                <i class="{{ cat.icon|default:'fas fa-folder' }}" style="color: white; font-size: 1.2rem;"></i>
+                            </div>
+                            <div class="recent-post-content">
+                                <div class="recent-post-title">{{ cat.name }}</div>
+                                <div class="recent-post-date">{{ cat.posts.published.count }} article{{ cat.posts.published.count|pluralize }}</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeView(viewType) {
+    const container = document.getElementById('posts-container');
+    const posts = container.querySelectorAll('.post-card');
+    const buttons = document.querySelectorAll('.view-btn');
+    
+    // Mettre à jour les boutons
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewType) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Changer la classe du conteneur
+    if (viewType === 'list') {
+        container.className = 'posts-list';
+        posts.forEach(post => {
+            post.className = 'post-card list-view';
+        });
+    } else {
+        container.className = 'posts-grid';
+        posts.forEach(post => {
+            post.className = 'post-card grid-view';
+        });
+    }
+    
+    // Sauvegarder la préférence
+    localStorage.setItem('preferredView', viewType);
+}
+
+function sortPosts(sortType) {
+    // Ici vous pourriez implémenter un tri côté client
+    // ou recharger la page avec le paramètre de tri
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('sort', sortType);
+    window.location.href = currentUrl.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Restaurer la vue préférée
+    const preferredView = localStorage.getItem('preferredView') || 'grid';
+    if (preferredView !== 'grid') {
+        changeView(preferredView);
+    }
+    
+    // Animation d'apparition
+    const posts = document.querySelectorAll('.post-card');
+    posts.forEach((post, index) => {
+        post.style.opacity = '0';
+        post.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            post.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            post.style.opacity = '1';
+            post.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

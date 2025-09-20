@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription - {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Créer un compte</h1>
+                <p>Rejoignez la communauté pour partager vos projets et articles</p>
+            </div>
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Veuillez corriger les erreurs ci-dessous.
+                </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="id_username">Nom d'utilisateur</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="form-error">{{ form.username.errors }}</div>
+                    {% endif %}
+                    <div class="form-help">150 caractères maximum. Lettres, chiffres et @/./+/-/_ uniquement.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_email">Adresse email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_password1">Mot de passe</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="form-error">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_password2">Confirmation du mot de passe</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="form-error">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_bio">Biographie (optionnel)</label>
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                        <div class="form-error">{{ form.bio.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_website">Site web (optionnel)</label>
+                    {{ form.website }}
+                    {% if form.website.errors %}
+                        <div class="form-error">{{ form.website.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-user-plus"></i> Créer mon compte
+                </button>
+            </form>
+            
+            <div class="auth-divider">
+                <span>Ou</span>
+            </div>
+            
+            <div class="auth-footer">
+                <p>Déjà inscrit ? <a href="{% url 'login' %}">Se connecter</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 2rem 0;
+    }
+    
+    .auth-card {
+        background: var(--bg-primary);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid var(--border-light);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .auth-header p {
+        color: var(--text-secondary);
+    }
+    
+    .auth-form {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+    
+    .form-group input, 
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+        font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .form-help {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .form-error {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+    
+    .form-error ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .btn-full {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        color: var(--text-muted);
+    }
+    
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background-color: var(--border-color);
+    }
+    
+    .auth-divider span {
+        padding: 0 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-footer {
+        text-align: center;
+    }
+    
+    .auth-footer p {
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+    
+    .auth-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Indicateur de force du mot de passe */
+    .password-strength {
+        margin-top: 0.5rem;
+        height: 5px;
+        background: var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    
+    .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    
+    .password-strength-weak .password-strength-bar {
+        background: var(--error-color);
+        width: 33%;
+    }
+    
+    .password-strength-medium .password-strength-bar {
+        background: var(--warning-color);
+        width: 66%;
+    }
+    
+    .password-strength-strong .password-strength-bar {
+        background: var(--success-color);
+        width: 100%;
+    }
+    
+    .password-strength-text {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .auth-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Fonction pour vérifier la force du mot de passe
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        
+        // Longueur minimale
+        if (password.length >= 8) strength++;
+        
+        // Contient des lettres minuscules et majuscules
+        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) strength++;
+        
+        // Contient des chiffres
+        if (password.match(/([0-9])/)) strength++;
+        
+        // Contient des caractères spéciaux
+        if (password.match(/([!,@,#,$,%,^,&,*,?,_,~])/)) strength++;
+        
+        return strength;
+    }
+    
+    // Mettre à jour l'indicateur de force du mot de passe
+    document.getElementById('id_password1').addEventListener('input', function() {
+        const password = this.value;
+        const strength = checkPasswordStrength(password);
+        const strengthBar = document.querySelector('.password-strength-bar');
+        const strengthText = document.querySelector('.password-strength-text');
+        const strengthMeter = document.querySelector('.password-strength');
+        
+        if (password.length === 0) {
+            strengthMeter.className = 'password-strength';
+            strengthText.textContent = '';
+            return;
+        }
+        
+        strengthMeter.className = 'password-strength';
+        
+        if (strength < 2) {
+            strengthMeter.classList.add('password-strength-weak');
+            strengthText.textContent = 'Faible';
+            strengthText.style.color = 'var(--error-color)';
+        } else if (strength < 4) {
+            strengthMeter.classList.add('password-strength-medium');
+            strengthText.textContent = 'Moyen';
+            strengthText.style.color = 'var(--warning-color)';
+        } else {
+            strengthMeter.classList.add('password-strength-strong');
+            strengthText.textContent = 'Fort';
+            strengthText.style.color = 'var(--success-color)';
+        }
+    });
+    
+    // Vérification de la correspondance des mots de passe
+    document.getElementById('id_password2').addEventListener('input', function() {
+        const password1 = document.getElementById('id_password1').value;
+        const password2 = this.value;
+        
+        if (password2.length === 0) return;
+        
+        if (password1 !== password2) {
+            this.style.borderColor = 'var(--error-color)';
+        } else {
+            this.style.borderColor = 'var(--success-color)';
+        }
+    });
+    
+    // Ajouter des indicateurs de force de mot de passe au DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        const password1Field = document.getElementById('id_password1');
+        if (password1Field) {
+            const strengthMeter = document.createElement('div');
+            strengthMeter.className = 'password-strength';
+            strengthMeter.innerHTML = '<div class="password-strength-bar"></div><div class="password-strength-text"></div>';
+            password1Field.parentNode.appendChild(strengthMeter);
+        }
+    });
+</script>
+{% endblock %}

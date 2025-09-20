@@ -1,0 +1,963 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} - Projet | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 3rem 0;
+    }
+
+    .project-hero-content {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .project-info h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .project-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    .project-description {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        opacity: 0.95;
+        margin-bottom: 2rem;
+    }
+
+    .project-status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-lg);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .status-planning { background: #fbbf24; color: #92400e; }
+    .status-development { background: #60a5fa; color: #1e40af; }
+    .status-testing { background: #a78bfa; color: #5b21b6; }
+    .status-completed { background: #34d399; color: #065f46; }
+    .status-maintenance { background: #f87171; color: #991b1b; }
+
+    .project-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .project-image-container {
+        position: relative;
+    }
+
+    .project-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .project-type-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-lg);
+        font-size: 0.8rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Contenu principal */
+    .project-content {
+        padding: 3rem 0;
+    }
+
+    .project-layout {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 4rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .project-main {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+        height: fit-content;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-content {
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 2.5rem;
+    }
+
+    .tech-stack {
+        margin-bottom: 2.5rem;
+    }
+
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+
+    .tech-item {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        border: 2px solid var(--border-light);
+        transition: var(--transition);
+    }
+
+    .tech-item:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .tech-icon {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .tech-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+    }
+
+    /* Sidebar */
+    .project-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .sidebar-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .sidebar-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-list {
+        list-style: none;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        transition: width 1s ease;
+    }
+
+    .links-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .link-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+        border: 2px solid transparent;
+    }
+
+    .link-item:hover {
+        border-color: var(--primary-color);
+        background: var(--bg-tertiary);
+        transform: translateX(5px);
+    }
+
+    .link-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .link-content {
+        flex: 1;
+    }
+
+    .link-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .link-description {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* Projets similaires */
+    .similar-projects {
+        background: var(--bg-secondary);
+        padding: 4rem 0;
+    }
+
+    .similar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .similar-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .similar-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .similar-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .similar-content {
+        padding: 1.5rem;
+    }
+
+    .similar-title {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .similar-title a {
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .similar-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .similar-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .similar-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+    }
+
+    .tech-tag {
+        padding: 0.25rem 0.5rem;
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--border-color);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.5rem;
+        top: 0.5rem;
+        width: 12px;
+        height: 12px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px var(--primary-color);
+    }
+
+    .timeline-content {
+        background: var(--bg-secondary);
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-lg);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .timeline-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .timeline-title {
+        font-weight: 600;
+        margin: 0.25rem 0;
+    }
+
+    .timeline-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    /* Galerie d'images */
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        aspect-ratio: 16/10;
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .gallery-image:hover {
+        transform: scale(1.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .project-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .project-hero-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .project-info h1 {
+            font-size: 2.2rem;
+        }
+
+        .sidebar-card {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .project-hero {
+            padding: 2rem 0;
+        }
+
+        .project-info h1 {
+            font-size: 1.8rem;
+        }
+
+        .project-meta {
+            gap: 1rem;
+        }
+
+        .project-actions {
+            flex-direction: column;
+        }
+
+        .project-main {
+            padding: 1.5rem;
+        }
+
+        .tech-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+
+        .similar-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline {
+            padding-left: 1.5rem;
+        }
+
+        .timeline-item::before {
+            left: -1.25rem;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Loading states */
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: var(--radius-md);
+    }
+
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="project-hero">
+    <div class="container">
+        <div class="project-hero-content">
+            <div class="project-info">
+                <div class="project-status status-{{ project.status }}">
+                    <i class="fas fa-circle"></i>
+                    {{ project.get_status_display }}
+                </div>
+                
+                <h1>{{ project.title }}</h1>
+                
+                <div class="project-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar-start"></i>
+                        Démarré le {{ project.start_date|date:"d F Y" }}
+                    </div>
+                    {% if project.end_date %}
+                    <div class="meta-item">
+                        <i class="fas fa-calendar-check"></i>
+                        Terminé le {{ project.end_date|date:"d F Y" }}
+                    </div>
+                    {% endif %}
+                    <div class="meta-item">
+                        <i class="fas fa-tag"></i>
+                        {{ project.get_project_type_display }}
+                    </div>
+                </div>
+                
+                <p class="project-description">{{ project.description }}</p>
+                
+                <div class="project-actions">
+                    {% if project.demo_url %}
+                        <a href="{{ project.demo_url }}" target="_blank" class="action-btn btn-primary">
+                            <i class="fas fa-external-link-alt"></i>
+                            Voir la démo
+                        </a>
+                    {% endif %}
+                    
+                    {% if project.github_url %}
+                        <a href="{{ project.github_url }}" target="_blank" class="action-btn btn-outline">
+                            <i class="fab fa-github"></i>
+                            Code source
+                        </a>
+                    {% endif %}
+                    
+                    {% if project.documentation_url %}
+                        <a href="{{ project.documentation_url }}" target="_blank" class="action-btn btn-outline">
+                            <i class="fas fa-book"></i>
+                            Documentation
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="project-image-container">
+                {% if project.featured_image %}
+                    <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="project-image">
+                {% else %}
+                    <div class="project-image"></div>
+                {% endif %}
+                <div class="project-type-badge">{{ project.get_project_type_display }}</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenu principal -->
+<section class="project-content">
+    <div class="project-layout">
+        <!-- Contenu principal -->
+        <div class="project-main fade-in-up">
+            <!-- Technologies utilisées -->
+            <div class="tech-stack">
+                <h2 class="section-title">
+                    <i class="fas fa-code"></i>
+                    Technologies Utilisées
+                </h2>
+                <div class="tech-grid">
+                    {% for tech in project.get_technologies_list %}
+                        <div class="tech-item">
+                            <div class="tech-icon">
+                                <i class="fas fa-{% if 'Python' in tech %}python{% elif 'JavaScript' in tech %}js{% elif 'Arduino' in tech %}microchip{% elif 'HTML' in tech %}html5{% elif 'CSS' in tech %}css3{% elif 'Django' in tech %}server{% else %}cog{% endif %}"></i>
+                            </div>
+                            <div class="tech-name">{{ tech }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Description détaillée -->
+            <div class="section-content">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Description du Projet
+                </h2>
+                <div>
+                    {{ project.description|linebreaks }}
+                    
+                    <!-- Ici vous pourriez ajouter plus de contenu détaillé -->
+                    <p>Ce projet démontre l'utilisation de plusieurs technologies modernes pour créer une solution innovante. Les défis techniques rencontrés et les solutions implémentées font de ce projet une excellente référence dans le domaine.</p>
+                    
+                    <h3>Fonctionnalités principales :</h3>
+                    <ul>
+                        <li>Interface utilisateur intuitive et responsive</li>
+                        <li>Architecture robuste et scalable</li>
+                        <li>Intégration avec des APIs externes</li>
+                        <li>Tests automatisés et déploiement continu</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Timeline du projet -->
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-timeline"></i>
+                    Historique du Projet
+                </h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-date">{{ project.start_date|date:"d F Y" }}</div>
+                            <div class="timeline-title">Lancement du projet</div>
+                            <div class="timeline-description">Début de la conception et planification des fonctionnalités principales.</div>
+                        </div>
+                    </div>
+                    
+                    {% if project.status == 'development' %}
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">En cours</div>
+                                <div class="timeline-title">Développement actif</div>
+                                <div class="timeline-description">Implementation des fonctionnalités et tests en cours.</div>
+                            </div>
+                        </div>
+                    {% elif project.status == 'completed' %}
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">{{ project.end_date|date:"d F Y"|default:"Récemment" }}</div>
+                                <div class="timeline-title">Projet terminé</div>
+                                <div class="timeline-description">Livraison finale et mise en production.</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="project-sidebar">
+            <!-- Informations du projet -->
+            <div class="sidebar-card fade-in-up">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-info"></i>
+                    Informations
+                </h3>
+                <ul class="info-list">
+                    <li class="info-item">
+                        <span class="info-label">Statut</span>
+                        <span class="info-value">{{ project.get_status_display }}</span>
+                    </li>
+                    <li class="info-item">
+                        <span class="info-label">Type</span>
+                        <span class="info-value">{{ project.get_project_type_display }}</span>
+                    </li>
+                    <li class="info-item">
+                        <span class="info-label">Début</span>
+                        <span class="info-value">{{ project.start_date|date:"M Y" }}</span>
+                    </li>
+                    {% if project.end_date %}
+                    <li class="info-item">
+                        <span class="info-label">Fin</span>
+                        <span class="info-value">{{ project.end_date|date:"M Y" }}</span>
+                    </li>
+                    {% endif %}
+                    <li class="info-item">
+                        <span class="info-label">Durée</span>
+                        <span class="info-value">
+                            {% if project.end_date %}
+                                {{ project.start_date|timesince:project.end_date }}
+                            {% else %}
+                                {{ project.start_date|timesince }} (en cours)
+                            {% endif %}
+                        </span>
+                    </li>
+                </ul>
+                
+                <!-- Barre de progression -->
+                {% if project.status != 'completed' %}
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 500;">Avancement</span>
+                        <span style="font-size: 0.9rem; color: var(--text-muted);">
+                            {% if project.status == 'planning' %}15%
+                            {% elif project.status == 'development' %}65%
+                            {% elif project.status == 'testing' %}85%
+                            {% else %}100%{% endif %}
+                        </span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% if project.status == 'planning' %}15%{% elif project.status == 'development' %}65%{% elif project.status == 'testing' %}85%{% else %}100%{% endif %};"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Liens -->
+            <div class="sidebar-card fade-in-up">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-link"></i>
+                    Liens Utiles
+                </h3>
+                <div class="links-list">
+                    {% if project.github_url %}
+                        <a href="{{ project.github_url }}" target="_blank" class="link-item">
+                            <div class="link-icon">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <div class="link-content">
+                                <div class="link-title">Code Source</div>
+                                <div class="link-description">Voir le code sur GitHub</div>
+                            </div>
+                        </a>
+                    {% endif %}
+                    
+                    {% if project.demo_url %}
+                        <a href="{{ project.demo_url }}" target="_blank" class="link-item">
+                            <div class="link-icon">
+                                <i class="fas fa-external-link-alt"></i>
+                            </div>
+                            <div class="link-content">
+                                <div class="link-title">Démonstration</div>
+                                <div class="link-description">Tester le projet en ligne</div>
+                            </div>
+                        </a>
+                    {% endif %}
+                    
+                    {% if project.documentation_url %}
+                        <a href="{{ project.documentation_url }}" target="_blank" class="link-item">
+                            <div class="link-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="link-content">
+                                <div class="link-title">Documentation</div>
+                                <div class="link-description">Guide d'utilisation</div>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact -->
+            <div class="sidebar-card fade-in-up">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-envelope"></i>
+                    Contact
+                </h3>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+                    Des questions sur ce projet ? N'hésitez pas à me contacter !
+                </p>
+                <a href="mailto:tadonglouis182@gmail.com" class="link-item">
+                    <div class="link-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="link-content">
+                        <div class="link-title">Email</div>
+                        <div class="link-description">tadonglouis182@gmail.com</div>
+                    </div>
+                </a>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<!-- Projets similaires -->
+{% if similar_projects %}
+<section class="similar-projects">
+    <div class="container">
+        <h2 style="text-align: center; font-size: 2.2rem; font-weight: 700; margin-bottom: 3rem; color: var(--text-primary);">
+            Projets Similaires
+        </h2>
+        
+        <div class="similar-grid">
+            {% for similar in similar_projects %}
+                <div class="similar-card">
+                    {% if similar.featured_image %}
+                        <img src="{{ similar.featured_image.url }}" alt="{{ similar.title }}" class="similar-image">
+                    {% else %}
+                        <div class="similar-image"></div>
+                    {% endif %}
+                    
+                    <div class="similar-content">
+                        <h3 class="similar-title">
+                            <a href="{{ similar.get_absolute_url }}">{{ similar.title }}</a>
+                        </h3>
+                        
+                        <p class="similar-description">
+                            {{ similar.description|truncatechars:120 }}
+                        </p>
+                        
+                        <div class="similar-tech">
+                            {% for tech in similar.get_technologies_list|slice:":4" %}
+                                <span class="tech-tag">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'projects' %}" class="btn btn-primary">
+                <i class="fas fa-arrow-right"></i>
+                Voir tous les projets
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation d'apparition des éléments
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+            }
+        });
+    }, observerOptions);
+
+    // Observer les cartes de la sidebar
+    document.querySelectorAll('.sidebar-card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.2}s`;
+        observer.observe(card);
+    });
+
+    // Animation de la barre de progression
+    const progressBars = document.querySelectorAll('.progress-fill');
+    progressBars.forEach(bar => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 500);
+                }
+            });
+        });
+        observer.observe(bar);
+    });
+
+    // Smooth scroll pour les liens internes
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Galerie d'images (si implémentée)
+    document.querySelectorAll('.gallery-image').forEach(img => {
+        img.addEventListener('click', function() {
+            // Ici vous pourriez ouvrir une lightbox
+            console.log('Ouvrir image:', this.src);
+        });
+    });
+});
+</script>
+{% endblock %}

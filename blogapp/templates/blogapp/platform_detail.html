@@ -1,0 +1,1013 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ platform }} - Guide Complet | 𝙇𝙏.𝙜𝙞𝙩𝙗𝙤𝙮{% endblock %}
+
+{% block extra_css %}
+<style>
+    .platform-hero {
+        background: linear-gradient(135deg, 
+            {% if platform == 'Arduino' %}#00979d 0%, #006064 100%
+            {% elif platform == 'ESP32' %}#e94d36 0%, #d32f2f 100%
+            {% else %}#c51a4a 0%, #b71c1c 100%{% endif %});
+        color: white;
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .platform-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="rgba(255,255,255,0.1)"><circle cx="10" cy="10" r="2"/><circle cx="30" cy="10" r="2"/><circle cx="50" cy="10" r="2"/><circle cx="70" cy="10" r="2"/><circle cx="90" cy="10" r="2"/><line x1="10" y1="10" x2="30" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><line x1="30" y1="10" x2="50" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><line x1="50" y1="10" x2="70" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><line x1="70" y1="10" x2="90" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="1"/></svg>');
+        background-size: 300px 60px;
+        animation: float 10s linear infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateX(-100px) translateY(0px); }
+        50% { transform: translateX(100px) translateY(-10px); }
+        100% { transform: translateX(-100px) translateY(0px); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .hero-text {
+        text-align: left;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f9ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-btn {
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background: rgba(255, 255, 255, 0.9);
+        color: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+    }
+
+    .btn-primary:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        color: white;
+    }
+
+    .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .hero-image {
+        text-align: center;
+        position: relative;
+    }
+
+    .platform-image {
+        max-width: 400px;
+        width: 100%;
+        height: auto;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        background: white;
+        padding: 2rem;
+        transition: var(--transition);
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .platform-image:hover {
+        transform: scale(1.1);
+        animation-play-state: paused;
+    }
+
+    /* Contenu principal */
+    .platform-content {
+        padding: 4rem 0;
+    }
+
+    .content-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-section {
+        margin-bottom: 4rem;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .section-title::before {
+        content: '';
+        width: 50px;
+        height: 4px;
+        background: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+        border-radius: 2px;
+    }
+
+    .intro-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+    }
+
+    /* Grille de présentation */
+    .presentation-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        margin-bottom: 4rem;
+    }
+
+    .presentation-text {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+    }
+
+    .presentation-text h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .presentation-image {
+        text-align: center;
+    }
+
+    .presentation-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition);
+    }
+
+    .presentation-image img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Spécifications */
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .spec-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        border-top: 4px solid {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+        transition: var(--transition);
+    }
+
+    .spec-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .spec-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %}, var(--accent-color));
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .spec-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .spec-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .spec-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .spec-list li:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .spec-value {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Variantes */
+    .variants-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .variant-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: 3px solid transparent;
+    }
+
+    .variant-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+    }
+
+    .variant-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: var(--bg-secondary);
+    }
+
+    .variant-content {
+        padding: 1.5rem;
+    }
+
+    .variant-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+
+    .variant-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .variant-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .feature-tag {
+        padding: 0.25rem 0.75rem;
+        background: var(--bg-tertiary);
+        color: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    /* Tutoriels associés */
+    .tutorials-section {
+        background: var(--bg-secondary);
+        padding: 4rem 0;
+        margin-top: 4rem;
+    }
+
+    .tutorials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .tutorial-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .tutorial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .tutorial-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    }
+
+    .tutorial-content {
+        padding: 1.5rem;
+    }
+
+    .tutorial-difficulty {
+        padding: 0.25rem 0.75rem;
+        background: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+        color: white;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .tutorial-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .tutorial-title a {
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .tutorial-title a:hover {
+        color: {% if platform == 'Arduino' %}#00979d{% elif platform == 'ESP32' %}#e94d36{% else %}#c51a4a{% endif %};
+    }
+
+    .tutorial-excerpt {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .tutorial-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border-light);
+        padding-top: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .presentation-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+        }
+
+        .spec-card {
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .tutorials-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .platform-hero {
+            padding: 2rem 0;
+        }
+
+        .hero-title {
+            font-size: 1.6rem;
+        }
+
+        .content-container {
+            padding: 0 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="platform-hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">{{ platform }}</h1>
+            <p class="hero-subtitle">
+                {% if platform == 'Arduino' %}
+                    La plateforme de prototypage électronique open-source qui démocratise la création d'objets interactifs. Parfait pour débuter en électronique et robotique.
+                {% elif platform == 'ESP32' %}
+                    Un microcontrôleur puissant avec WiFi et Bluetooth intégrés. L'outil idéal pour créer des objets connectés et des projets IoT innovants.
+                {% else %}
+                    Un nano-ordinateur complet sous Linux. Transformez vos idées en projets sophistiqués avec cette plateforme polyvalente.
+                {% endif %}
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ tutorials_count }}</span>
+                    <span class="stat-label">Tutoriels</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">
+                        {% if platform == 'Arduino' %}15+{% elif platform == 'ESP32' %}8+{% else %}12+{% endif %}
+                    </span>
+                    <span class="stat-label">Variantes</span>
+                </div>
+            </div>
+            
+            <div class="hero-actions">
+                <a href="#tutoriels" class="hero-btn btn-primary">
+                    <i class="fas fa-play"></i>
+                    Commencer les tutoriels
+                </a>
+                <a href="#specifications" class="hero-btn btn-outline">
+                    <i class="fas fa-info-circle"></i>
+                    Voir les spécifications
+                </a>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            {% if platform == 'Arduino' %}
+                <img src="https://www.positron-libre.com/electronique/arduino/images/arduino/carte-arduino-uno-made-in-italy.jpg" alt="Arduino" class="platform-image">
+            {% elif platform == 'ESP32' %}
+                <img src="https://tse3.mm.bing.net/th/id/OIP.RJk8hOQYn3GZStavmNYJCAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="ESP32" class="platform-image">
+            {% else %}
+                <img src="https://th.bing.com/th/id/R.9f2d69771a9e5f6c3df3363d879993ee?rik=vTvE3y4TYB09yA&pid=ImgRaw&r=0" alt="Raspberry Pi" class="platform-image">
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Contenu principal -->
+<div class="platform-content">
+    <div class="content-container">
+        <!-- Introduction -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Qu'est-ce que {{ platform }} ?
+            </h2>
+            
+            <p class="intro-text">
+                {% if platform == 'Arduino' %}
+                    Arduino est une plateforme de prototypage électronique open-source basée sur des logiciels et du matériel flexibles et faciles à utiliser. Elle s'adresse aux créateurs, aux étudiants et à toute personne souhaitant créer des objets ou des environnements interactifs. Les cartes Arduino peuvent lire des entrées (lumière sur un capteur, doigt sur un bouton, message Twitter) et les transformer en sorties (activer un moteur, allumer une LED, publier quelque chose en ligne).
+                {% elif platform == 'ESP32' %}
+                    L'ESP32 est un système sur puce (SoC) à faible coût et à faible consommation d'énergie avec Wi-Fi et Bluetooth intégrés. Il intègre toutes les fonctionnalités de pointe, notamment un commutateur d'antenne rapide, une technologie de gestion de l'alimentation RF, quatre SPI, deux I2C, deux I2S, trois UART, CAN et IR (TX/RX), ainsi que des GPIO, ADC, DAC, capacité tactile, capteur de température et amplificateur à faible bruit avec un récepteur RF.
+                {% else %}
+                    Le Raspberry Pi est un nano-ordinateur monocarte à processeur ARM de la taille d'une carte de crédit. Il est développé par la fondation Raspberry Pi pour démocratiser l'accès aux outils informatiques et à l'éducation informatique. Capable de faire tourner Linux, il peut servir d'ordinateur de bureau, de serveur, de station multimédia, de console de jeux rétro, ou de cerveau pour vos projets de robotique et domotique.
+                {% endif %}
+            </p>
+        </section>
+
+        <!-- Présentation avec images -->
+        <section class="content-section">
+            <div class="presentation-grid">
+                <div class="presentation-text">
+                    <h3>
+                        {% if platform == 'Arduino' %}
+                            Facilité d'utilisation
+                        {% elif platform == 'ESP32' %}
+                            Connectivité intégrée
+                        {% else %}
+                            Puissance et polyvalence
+                        {% endif %}
+                    </h3>
+                    <p>
+                        {% if platform == 'Arduino' %}
+                            Arduino simplifie le processus de travail avec des microcontrôleurs grâce à son environnement de programmation intuitif et sa vaste bibliothèque de code. Idéal pour les débutants, il permet de créer rapidement des projets interactifs sans connaissance approfondie en électronique.
+                        {% elif platform == 'ESP32' %}
+                            Avec le Wi-Fi 802.11 b/g/n et le Bluetooth 4.2 BR/EDR et BLE intégrés, l'ESP32 est parfait pour les projets IoT. Sa puissance de traitement élevée et sa consommation d'énergie optimisée en font un choix idéal pour les applications connectées.
+                        {% else %}
+                            Malgré sa taille compacte, le Raspberry Pi offre les performances d'un ordinateur de bureau. Avec ses ports GPIO, il peut contrôler des composants électroniques tout en exécutant des applications complexes sous Linux.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="presentation-image">
+                    {% if platform == 'Arduino' %}
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f5f5f5'/%3E%3Crect x='30' y='40' width='240' height='120' rx='10' fill='%2300979d'/%3E%3Ccircle cx='60' cy='70' r='6' fill='%23ffab00'/%3E%3Ccircle cx='240' cy='70' r='6' fill='%23ffab00'/%3E%3Crect x='80' y='60' width='140' height='80' rx='5' fill='%23263238'/%3E%3Ctext x='150' y='105' text-anchor='middle' fill='%2300979d' font-family='Arial' font-size='12'%3EARDUINO%3C/text%3E%3C/svg%3E" alt="{{ platform }} en action">
+                    {% elif platform == 'ESP32' %}
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f5f5f5'/%3E%3Crect x='50' y='60' width='200' height='80' rx='8' fill='%23e94d36'/%3E%3Ccircle cx='80' cy='90' r='4' fill='%23ff6f00'/%3E%3Ccircle cx='220' cy='90' r='4' fill='%23ff6f00'/%3E%3Cpath d='M100 100 Q150 80 200 100 Q150 120 100 100' fill='%23ffeb3b' opacity='0.3'/%3E%3Ctext x='150' y='105' text-anchor='middle' fill='white' font-family='Arial' font-size='10'%3EWIFI%3C/text%3E%3C/svg%3E" alt="{{ platform }} connectivité">
+                    {% else %}
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f5f5f5'/%3E%3Crect x='40' y='50' width='220' height='100' rx='10' fill='%234caf50'/%3E%3Crect x='60' y='70' width='180' height='60' rx='5' fill='%23263238'/%3E%3Ccircle cx='80' cy='90' r='3' fill='%23ffab00'/%3E%3Ccircle cx='240' cy='90' r='3' fill='%23ffab00'/%3E%3Ctext x='150' y='105' text-anchor='middle' fill='%234caf50' font-family='Arial' font-size='8'%3ERaspberry Pi%3C/text%3E%3C/svg%3E" alt="{{ platform }} polyvalence">
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Spécifications techniques -->
+        <section class="content-section" id="specifications">
+            <h2 class="section-title">
+                <i class="fas fa-cog"></i>
+                Spécifications techniques
+            </h2>
+            
+            <div class="specs-grid">
+                {% if platform == 'Arduino' %}
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="spec-title">Microcontrôleur</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">Processeur</span><span class="spec-value">ATmega328P</span></li>
+                            <li><span class="spec-label">Fréquence</span><span class="spec-value">16 MHz</span></li>
+                            <li><span class="spec-label">Architecture</span><span class="spec-value">8 bits</span></li>
+                            <li><span class="spec-label">Mémoire Flash</span><span class="spec-value">32 KB</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <h3 class="spec-title">Mémoire</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">SRAM</span><span class="spec-value">2 KB</span></li>
+                            <li><span class="spec-label">EEPROM</span><span class="spec-value">1 KB</span></li>
+                            <li><span class="spec-label">Flash</span><span class="spec-value">32 KB</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <h3 class="spec-title">Entrées/Sorties</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">GPIO</span><span class="spec-value">14 pins</span></li>
+                            <li><span class="spec-label">PWM</span><span class="spec-value">6 pins</span></li>
+                            <li><span class="spec-label">Analogiques</span><span class="spec-value">6 pins</span></li>
+                        </ul>
+                    </div>
+                {% elif platform == 'ESP32' %}
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="spec-title">Processeur</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">CPU</span><span class="spec-value">Dual-core 240MHz</span></li>
+                            <li><span class="spec-label">Architecture</span><span class="spec-value">32 bits</span></li>
+                            <li><span class="spec-label">Co-processeur</span><span class="spec-value">ULP</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="spec-title">Connectivité</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">WiFi</span><span class="spec-value">802.11 b/g/n</span></li>
+                            <li><span class="spec-label">Bluetooth</span><span class="spec-value">4.2 BR/EDR + BLE</span></li>
+                            <li><span class="spec-label">Portée</span><span class="spec-value">150m+</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <h3 class="spec-title">Mémoire</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">SRAM</span><span class="spec-value">520 KB</span></li>
+                            <li><span class="spec-label">Flash</span><span class="spec-value">4 MB</span></li>
+                            <li><span class="spec-label">PSRAM</span><span class="spec-value">8 MB (opt)</span></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="spec-title">Processeur</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">CPU</span><span class="spec-value">ARM Cortex-A72</span></li>
+                            <li><span class="spec-label">Fréquence</span><span class="spec-value">1.5 GHz</span></li>
+                            <li><span class="spec-label">Cœurs</span><span class="spec-value">4 cœurs</span></li>
+                            <li><span class="spec-label">GPU</span><span class="spec-value">VideoCore VI</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <h3 class="spec-title">Mémoire & Stockage</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">RAM</span><span class="spec-value">4/8 GB LPDDR4</span></li>
+                            <li><span class="spec-label">Stockage</span><span class="spec-value">MicroSD</span></li>
+                            <li><span class="spec-label">USB</span><span class="spec-value">2x USB 3.0</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <h3 class="spec-title">Connectivité</h3>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">Ethernet</span><span class="spec-value">Gigabit</span></li>
+                            <li><span class="spec-label">WiFi</span><span class="spec-value">802.11ac</span></li>
+                            <li><span class="spec-label">Bluetooth</span><span class="spec-value">5.0 BLE</span></li>
+                            <li><span class="spec-label">GPIO</span><span class="spec-value">40 pins</span></li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Variantes -->
+        <section class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-layer-group"></i>
+                Variantes et modèles
+            </h2>
+            
+            <div class="variants-grid">
+                {% if platform == 'Arduino' %}
+                    <div class="variant-card">
+                        <img src="https://www.positron-libre.com/electronique/arduino/images/arduino/uno-rev3.jpg" alt="Arduino UNO" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Arduino UNO</h4>
+                            <p class="variant-description">Le modèle de référence, parfait pour débuter. Robuste et bien documenté.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">ATmega328P</span>
+                                <span class="feature-tag">14 I/O</span>
+                                <span class="feature-tag">USB</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="https://www.positron-libre.com/electronique/arduino/images/arduino/nano.jpg" alt="Arduino Nano" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Arduino Nano</h4>
+                            <p class="variant-description">Version compacte pour les projets nécessitant un encombrement réduit.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">Compact</span>
+                                <span class="feature-tag">USB Mini</span>
+                                <span class="feature-tag">Breadboard</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="https://www.positron-libre.com/electronique/arduino/images/arduino/mega2560-rev3.jpg" alt="Arduino Mega" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Arduino Mega</h4>
+                            <p class="variant-description">Plus de mémoire et d'I/O pour les projets complexes nécessitant beaucoup de capteurs.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">54 I/O</span>
+                                <span class="feature-tag">256KB Flash</span>
+                                <span class="feature-tag">16 Analog</span>
+                            </div>
+                        </div>
+                    </div>
+                {% elif platform == 'ESP32' %}
+                    <div class="variant-card">
+                        <img src="https://i0.wp.com/arduinofactory.fr/wp-content/uploads/2024/09/ori-module-nodemcu-esp32-28407.jpg?w=600&ssl=1" alt="ESP32-WROOM" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">ESP32-WROOM</h4>
+                            <p class="variant-description">Module de base avec WiFi et Bluetooth, idéal pour débuter avec l'ESP32.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">WiFi</span>
+                                <span class="feature-tag">Bluetooth</span>
+                                <span class="feature-tag">4MB Flash</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="https://tse1.mm.bing.net/th/id/OIP.Z97C5zKgdT_f5DAc-tq2wAHaHa?pid=ImgDet&w=192&h=192&c=7&dpr=2.2&o=7&rm=3" alt="ESP32-WROVER" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">ESP32-WROVER</h4>
+                            <p class="variant-description">Version avec PSRAM supplémentaire pour les applications gourmandes en mémoire.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">8MB PSRAM</span>
+                                <span class="feature-tag">Camera</span>
+                                <span class="feature-tag">Display</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="https://a.allegroimg.com/original/116ec8/c1263da240359e9dff2586c594db/ESP32-ESP32-C3-MINI-DevKit-RISC-V-WiFi-BLE-5-0" alt="ESP32-C3" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">ESP32-C3</h4>
+                            <p class="variant-description">Version économique avec architecture RISC-V et WiFi 6.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">RISC-V</span>
+                                <span class="feature-tag">WiFi 6</span>
+                                <span class="feature-tag">Low Cost</span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="variant-card">
+                        <img src="https://th.bing.com/th/id/R.9f2d69771a9e5f6c3df3363d879993ee?rik=vTvE3y4TYB09yA&pid=ImgRaw&r=0" alt="Raspberry Pi 4" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Raspberry Pi 4</h4>
+                            <p class="variant-description">Le modèle le plus puissant avec jusqu'à 8GB de RAM et connectivité moderne.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">8GB RAM</span>
+                                <span class="feature-tag">USB 3.0</span>
+                                <span class="feature-tag">4K HDMI</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="data:image/webp;base64,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" alt="Pi Zero 2 W" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Pi Zero 2 W</h4>
+                            <p class="variant-description">Version ultra-compacte avec WiFi intégré, parfaite pour les projets portables.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">Ultra compact</span>
+                                <span class="feature-tag">WiFi</span>
+                                <span class="feature-tag">Low power</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="variant-card">
+                        <img src="data:image/webp;base64,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" alt="Compute Module 4" class="variant-image">
+                        <div class="variant-content">
+                            <h4 class="variant-title">Compute Module 4</h4>
+                            <p class="variant-description">Version industrielle pour l'intégration dans des produits commerciaux.</p>
+                            <div class="variant-features">
+                                <span class="feature-tag">Industrial</span>
+                                <span class="feature-tag">eMMC</span>
+                                <span class="feature-tag">Modular</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Section Tutoriels -->
+<section class="tutorials-section" id="tutoriels">
+    <div class="content-container">
+        <h2 class="section-title" style="text-align: center; color: var(--text-primary);">
+            <i class="fas fa-graduation-cap"></i>
+            Tutoriels {{ platform }}
+        </h2>
+        
+        {% if posts %}
+            <div class="tutorials-grid">
+                {% for post in posts %}
+                <div class="tutorial-card">
+                    {% if post.featured_image %}
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="tutorial-image">
+                    {% else %}
+                        <div class="tutorial-image"></div>
+                    {% endif %}
+                    
+                    <div class="tutorial-content">
+                        <span class="tutorial-difficulty">{{ post.get_difficulty_level_display }}</span>
+                        
+                        <h3 class="tutorial-title">
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                        </h3>
+                        
+                        <p class="tutorial-excerpt">{{ post.excerpt }}</p>
+                        
+                        <div class="tutorial-meta">
+                            <span>
+                                <i class="fas fa-clock"></i>
+                                {{ post.reading_time }} min
+                            </span>
+                            <span>
+                                <i class="fas fa-eye"></i>
+                                {{ post.views_count }} vues
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{% url 'post_list' %}?tag={{ platform }}" class="hero-btn btn-primary">
+                    <i class="fas fa-arrow-right"></i>
+                    Voir tous les tutoriels {{ platform }}
+                </a>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem;">
+                <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">
+                    Les tutoriels {{ platform }} arrivent bientôt !
+                </p>
+                <a href="{% url 'robotics_posts' %}" class="hero-btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à la robotique
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des spécifications au scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observer les cartes
+    document.querySelectorAll('.spec-card, .variant-card, .tutorial-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        card.style.transitionDelay = `${index * 0.1}s`;
+        observer.observe(card);
+    });
+
+    // Smooth scroll pour les liens d'ancrage
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const offset = 100; // Hauteur de la navbar
+                const elementPosition = target.offsetTop;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Animation de compteur pour les statistiques
+    const statNumbers = document.querySelectorAll('.stat-number');
+    const animateCounter = (element) => {
+        const target = parseInt(element.textContent.replace(/\D/g, ''));
+        if (target > 0) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = element.textContent.replace(/\d+/, target);
+                    clearInterval(timer);
+                } else {
+                    element.textContent = element.textContent.replace(/\d+/, Math.floor(current));
+                }
+            }, 40);
+        }
+    };
+
+    // Observer pour les statistiques
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                statsObserver.unobserve(entry.target);
+            }
+        });
+    });
+
+    statNumbers.forEach(stat => statsObserver.observe(stat));
+});
+</script>
+{% endblock %}
